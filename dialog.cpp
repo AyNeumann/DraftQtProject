@@ -29,6 +29,7 @@ void Dialog::init()
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
+    connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
 }
 
 void Dialog::getAllBlobJs()
@@ -48,7 +49,7 @@ void Dialog::getAllBlobJs()
 
     QJsonDocument json = QJsonDocument::fromJson(response_data);
 
-    qDebug() << json.toJson();
+    //qDebug() << json.toJson();
 
     QString strJson(json.toJson());
 
@@ -90,7 +91,7 @@ void Dialog::getAllBlobJs()
 
 void Dialog::getBlobJById()
 {
-    QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->sb_IdNumber->value());
+    QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->sb_GetIdNumber->value());
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -105,7 +106,7 @@ void Dialog::getBlobJById()
 
     QJsonDocument json = QJsonDocument::fromJson(response_data);
 
-    qDebug() << json.toJson();
+    //qDebug() << json.toJson();
 
     QString strJson(json.toJson());
 
@@ -135,11 +136,33 @@ void Dialog::saveBlobJ()
 
     QJsonDocument json = QJsonDocument::fromJson(response_data);
 
-    qDebug() << json.toJson();
+    //qDebug() << json.toJson();
 
     QString strJson(json.toJson());
 
     ui->pTE_View->document()->setPlainText(strJson);
+
+    reply->deleteLater();
+}
+
+void Dialog::deleteBlobJ()
+{
+    QString url = QString("http://localhost:8080/blobj/delete?id=%1").arg(ui->sb_DeletIdNumber->value());
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.deleteResource(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    // qDebug() << "Response data: " << response_data;
+
+    ui->pTE_View->document()->setPlainText(response_data);
 
     reply->deleteLater();
 }

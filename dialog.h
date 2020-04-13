@@ -26,5 +26,6 @@ private slots:
     void getAllBlobJs();
     void getBlobJById();
     void saveBlobJ();
+    void deleteBlobJ();
 };
 #endif // DIALOG_H

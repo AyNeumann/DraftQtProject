@@ -27,5 +27,6 @@ private slots:
     void getBlobJById();
     void saveBlobJ();
     void deleteBlobJ();
+    void displayResponse(QJsonDocument *json);
 };
 #endif // DIALOG_H

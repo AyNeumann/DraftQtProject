@@ -13,13 +13,13 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_6">
+  <layout class="QHBoxLayout" name="horizontalLayout_5">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <widget class="QGroupBox" name="groupBox">
@@ -42,11 +42,22 @@
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="pB_GetAll">
-            <property name="text">
-             <string>Get All</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QPushButton" name="pB_GetAll">
+              <property name="text">
+               <string>Get All</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pB_GetAllAndSave">
+              <property name="text">
+               <string>Get All and Save</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -98,6 +109,13 @@
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Save one BlobJ</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pB_GenerateTemplate">
+            <property name="text">
+             <string>Generate Template</string>
             </property>
            </widget>
           </item>
@@ -163,7 +181,14 @@
        </item>
       </layout>
      </widget>
-     <widget class="QPlainTextEdit" name="pTE_View"/>
+     <widget class="QPlainTextEdit" name="pTE_View">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </widget>
    </item>
   </layout>

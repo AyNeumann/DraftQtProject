@@ -27,9 +27,17 @@ static QNetworkAccessManager nam;
 void Dialog::init()
 {
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
+    connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
+
+    QPixmap pixmap(":/icons/save32x32.png");
+    QIcon ButtonIcon(pixmap);
+    ui->pB_GetAllAndSave->setIcon(ButtonIcon);
+
+    ui->pB_GetAllAndSave->setEnabled(false);
+    ui->pB_GenerateTemplate->setEnabled(false);
 }
 
 void Dialog::getAllBlobJs()
@@ -49,11 +57,7 @@ void Dialog::getAllBlobJs()
 
     QJsonDocument json = QJsonDocument::fromJson(response_data);
 
-    //qDebug() << json.toJson();
-
-    QString strJson(json.toJson());
-
-    ui->pTE_View->document()->setPlainText(strJson);
+    displayResponse(&json);
 
     //***********************************************************************
 
@@ -106,11 +110,7 @@ void Dialog::getBlobJById()
 
     QJsonDocument json = QJsonDocument::fromJson(response_data);
 
-    //qDebug() << json.toJson();
-
-    QString strJson(json.toJson());
-
-    ui->pTE_View->document()->setPlainText(strJson);
+    displayResponse(&json);
 
     reply->deleteLater();
 }
@@ -165,5 +165,12 @@ void Dialog::deleteBlobJ()
     ui->pTE_View->document()->setPlainText(response_data);
 
     reply->deleteLater();
+}
+
+void Dialog::displayResponse(QJsonDocument *json)
+{
+    QString strJson(json->toJson());
+
+    ui->pTE_View->document()->setPlainText(strJson);
 }
 

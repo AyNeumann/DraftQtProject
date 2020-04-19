@@ -30,6 +30,7 @@ void Dialog::init()
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
+    connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobJFromForm);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
 
     QPixmap pixmap(":/icons/save32x32.png");
@@ -37,7 +38,6 @@ void Dialog::init()
     ui->pB_GetAllAndSave->setIcon(ButtonIcon);
 
     ui->pB_GetAllAndSave->setEnabled(false);
-    ui->pB_GenerateTemplate->setEnabled(false);
 }
 
 void Dialog::getAllBlobJs()
@@ -123,9 +123,12 @@ void Dialog::saveBlobJ()
 
     QString BlobJAsText = ui->pTE_View->toPlainText();
 
+    qDebug() << "BlobJ As Text: " << BlobJAsText;
+
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
     QNetworkReply *reply = nam.post(request, QJsonDocument(BlobJAsJson).toJson());
+
 
     while (!reply->isFinished())
     {
@@ -147,7 +150,7 @@ void Dialog::saveBlobJ()
 
 void Dialog::deleteBlobJ()
 {
-    QString url = QString("http://localhost:8080/blobj/delete?id=%1").arg(ui->sb_DeletIdNumber->value());
+    QString url = QString("http://localhost:8080/blobj/delete?id=%1").arg(ui->sb_DeleteIdNumber->value());
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -174,3 +177,38 @@ void Dialog::displayResponse(QJsonDocument *json)
     ui->pTE_View->document()->setPlainText(strJson);
 }
 
+void Dialog::saveBlobJFromForm()
+{
+    QJsonObject blobJToSave
+    {
+        {"name", ui->lE_BlobJName->text()},
+        {"sign", ui->lE_BlobJSign->text()},
+        {"count", ui->sB_BlobJCount->value()},
+        {"rank", ui->sB_BlobJRank->value()},
+        {"type", ui->lE_BlobJType->text()},
+    };
+
+    qDebug() << blobJToSave;
+
+    QString url = QString("http://localhost:8080/blobj/save");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.post(request, QJsonDocument(blobJToSave).toJson());
+
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = QJsonDocument::fromJson(response_data);
+
+    QString strJson(json.toJson());
+
+    ui->pTE_View->document()->setPlainText(strJson);
+
+    reply->deleteLater();
+}

@@ -117,35 +117,13 @@ void Dialog::getBlobJById()
 
 void Dialog::saveBlobJ()
 {
-    QString url = QString("http://localhost:8080/blobj/save");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
     QString BlobJAsText = ui->pTE_View->toPlainText();
 
     qDebug() << "BlobJ As Text: " << BlobJAsText;
 
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
-    QNetworkReply *reply = nam.post(request, QJsonDocument(BlobJAsJson).toJson());
-
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = QJsonDocument::fromJson(response_data);
-
-    //qDebug() << json.toJson();
-
-    QString strJson(json.toJson());
-
-    ui->pTE_View->document()->setPlainText(strJson);
-
-    reply->deleteLater();
+    saveBlobJInDB(BlobJAsJson);
 }
 
 void Dialog::deleteBlobJ()
@@ -190,11 +168,18 @@ void Dialog::saveBlobJFromForm()
 
     qDebug() << blobJToSave;
 
+    saveBlobJInDB(QJsonDocument(blobJToSave));
+
+
+}
+
+void Dialog::saveBlobJInDB(QJsonDocument blobJToSave)
+{
     QString url = QString("http://localhost:8080/blobj/save");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = nam.post(request, QJsonDocument(blobJToSave).toJson());
+    QNetworkReply *reply = nam.post(request, blobJToSave.toJson());
 
 
     while (!reply->isFinished())

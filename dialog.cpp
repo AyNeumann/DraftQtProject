@@ -26,6 +26,11 @@ static QNetworkAccessManager nam;
 
 void Dialog::init()
 {
+    setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    QWidget::setWindowTitle("Aapi Draft Qt Client");
+
+    ui->splitter_2->setStretchFactor(1,3);
+
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
@@ -119,8 +124,6 @@ void Dialog::saveBlobJ()
 {
     QString BlobJAsText = ui->pTE_View->toPlainText();
 
-    qDebug() << "BlobJ As Text: " << BlobJAsText;
-
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
     saveBlobJInDB(BlobJAsJson);
@@ -169,8 +172,6 @@ void Dialog::saveBlobJFromForm()
     qDebug() << blobJToSave;
 
     saveBlobJInDB(QJsonDocument(blobJToSave));
-
-
 }
 
 void Dialog::saveBlobJInDB(QJsonDocument blobJToSave)

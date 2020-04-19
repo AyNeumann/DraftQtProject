@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QtNetwork>
 #include <QDebug>
+#include <QJsonDocument>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }

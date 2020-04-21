@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QtNetwork>
 #include <QDebug>
+#include <QJsonDocument>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -29,5 +30,7 @@ private slots:
     void deleteBlobJ();
     void displayResponse(QJsonDocument *json);
     void saveBlobJFromForm();
+    void saveBlobJInDB(QJsonDocument blobJToSave);
+    QJsonArray getAllBlobJTypes();
 };
 #endif // DIALOG_H

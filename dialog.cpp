@@ -26,6 +26,11 @@ static QNetworkAccessManager nam;
 
 void Dialog::init()
 {
+    setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    QWidget::setWindowTitle("Aapi Draft Qt Client");
+
+    ui->splitter_2->setStretchFactor(1,3);
+
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
@@ -38,6 +43,13 @@ void Dialog::init()
     ui->pB_GetAllAndSave->setIcon(ButtonIcon);
 
     ui->pB_GetAllAndSave->setEnabled(false);
+
+    QJsonArray types = getAllBlobJTypes();
+
+    for(int i=0; i< types.count(); ++i){
+        qDebug() << types.at(i).toString();
+        ui->cB_BlobJType->addItem(types.at(i).toString());
+    }
 }
 
 void Dialog::getAllBlobJs()
@@ -117,35 +129,11 @@ void Dialog::getBlobJById()
 
 void Dialog::saveBlobJ()
 {
-    QString url = QString("http://localhost:8080/blobj/save");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
     QString BlobJAsText = ui->pTE_View->toPlainText();
-
-    qDebug() << "BlobJ As Text: " << BlobJAsText;
 
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
-    QNetworkReply *reply = nam.post(request, QJsonDocument(BlobJAsJson).toJson());
-
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = QJsonDocument::fromJson(response_data);
-
-    //qDebug() << json.toJson();
-
-    QString strJson(json.toJson());
-
-    ui->pTE_View->document()->setPlainText(strJson);
-
-    reply->deleteLater();
+    saveBlobJInDB(BlobJAsJson);
 }
 
 void Dialog::deleteBlobJ()
@@ -185,16 +173,21 @@ void Dialog::saveBlobJFromForm()
         {"sign", ui->lE_BlobJSign->text()},
         {"count", ui->sB_BlobJCount->value()},
         {"rank", ui->sB_BlobJRank->value()},
-        {"type", ui->lE_BlobJType->text()},
+        {"type", ui->cB_BlobJType->currentText()},
     };
 
     qDebug() << blobJToSave;
 
+    saveBlobJInDB(QJsonDocument(blobJToSave));
+}
+
+void Dialog::saveBlobJInDB(QJsonDocument blobJToSave)
+{
     QString url = QString("http://localhost:8080/blobj/save");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = nam.post(request, QJsonDocument(blobJToSave).toJson());
+    QNetworkReply *reply = nam.post(request, blobJToSave.toJson());
 
 
     while (!reply->isFinished())
@@ -211,4 +204,28 @@ void Dialog::saveBlobJFromForm()
     ui->pTE_View->document()->setPlainText(strJson);
 
     reply->deleteLater();
+}
+
+QJsonArray Dialog::getAllBlobJTypes()
+{
+    QString url = QString("http://localhost:8080/type/all");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.get(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument types = QJsonDocument::fromJson(response_data);
+
+    QJsonArray typesArray = types.array();
+
+    reply->deleteLater();
+
+    return typesArray;
 }

@@ -34,9 +34,15 @@ void Dialog::init()
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
+    connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
     connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobJFromForm);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
+
+    connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->rB_MinCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->rB_MinMaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -125,6 +131,11 @@ void Dialog::getBlobJById()
     displayResponse(&json);
 
     reply->deleteLater();
+}
+
+void Dialog::getBlobByCount()
+{
+
 }
 
 void Dialog::saveBlobJ()
@@ -228,4 +239,14 @@ QJsonArray Dialog::getAllBlobJTypes()
     reply->deleteLater();
 
     return typesArray;
+}
+
+void Dialog::checkCountRadioButton()
+{
+    if(ui->rB_MinMaxCount->isChecked())
+    {
+        ui->sB_BlobJCount2->setEnabled(true);
+    } else {
+        ui->sB_BlobJCount2->setEnabled(false);
+    }
 }

@@ -179,21 +179,31 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="rB_ExactCount">
+              <property name="text">
+               <string>Exact</string>
+              </property>
+              <property name="autoExclusive">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rB_MinCount">
               <property name="text">
                <string>Min</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="rB_MaxCount">
               <property name="text">
                <string>Max</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButton_3">
+             <widget class="QRadioButton" name="rB_MinMaxCount">
               <property name="text">
                <string>Min And Max</string>
               </property>
@@ -204,10 +214,34 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QSpinBox" name="spinBox"/>
+             <widget class="QSpinBox" name="sB_BlobJCount1"/>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBox_2"/>
+             <widget class="QSpinBox" name="sB_BlobJCount2"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pB_GetByCount">
+              <property name="text">
+               <string>Get By Count</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

@@ -31,5 +31,6 @@ private slots:
     void displayResponse(QJsonDocument *json);
     void saveBlobJFromForm();
     void saveBlobJInDB(QJsonDocument blobJToSave);
+    QJsonArray getAllBlobJTypes();
 };
 #endif // DIALOG_H

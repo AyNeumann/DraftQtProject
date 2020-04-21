@@ -43,6 +43,13 @@ void Dialog::init()
     ui->pB_GetAllAndSave->setIcon(ButtonIcon);
 
     ui->pB_GetAllAndSave->setEnabled(false);
+
+    QJsonArray types = getAllBlobJTypes();
+
+    for(int i=0; i< types.count(); ++i){
+        qDebug() << types.at(i).toString();
+        ui->cB_BlobJType->addItem(types.at(i).toString());
+    }
 }
 
 void Dialog::getAllBlobJs()
@@ -166,7 +173,7 @@ void Dialog::saveBlobJFromForm()
         {"sign", ui->lE_BlobJSign->text()},
         {"count", ui->sB_BlobJCount->value()},
         {"rank", ui->sB_BlobJRank->value()},
-        {"type", ui->lE_BlobJType->text()},
+        {"type", ui->cB_BlobJType->currentText()},
     };
 
     qDebug() << blobJToSave;
@@ -197,4 +204,28 @@ void Dialog::saveBlobJInDB(QJsonDocument blobJToSave)
     ui->pTE_View->document()->setPlainText(strJson);
 
     reply->deleteLater();
+}
+
+QJsonArray Dialog::getAllBlobJTypes()
+{
+    QString url = QString("http://localhost:8080/type/all");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.get(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument types = QJsonDocument::fromJson(response_data);
+
+    QJsonArray typesArray = types.array();
+
+    reply->deleteLater();
+
+    return typesArray;
 }

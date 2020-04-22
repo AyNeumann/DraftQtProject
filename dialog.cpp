@@ -135,6 +135,48 @@ void Dialog::getBlobJById()
 
 void Dialog::getBlobByCount()
 {
+    QString url = "";
+
+    if(ui->rB_ExactCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCount?count=%1")
+                .arg(ui->sB_BlobJCount1->value());
+    }
+    if(ui->rB_MinCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCountMin?minCount=%1")
+                .arg(ui->sB_BlobJCount1->value());
+    }
+    if(ui->rB_MaxCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCountMax?maxCount=%1")
+                .arg(ui->sB_BlobJCount1->value());
+    }
+    if(ui->rB_MinMaxCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCountTranche?minCount=%1&maxCount=%2")
+                .arg(ui->sB_BlobJCount1->value()).arg(ui->sB_BlobJCount2->value());
+    }
+
+    qDebug() << "URL: " << url;
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.get(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = QJsonDocument::fromJson(response_data);
+
+    displayResponse(&json);
+
+    reply->deleteLater();
 
 }
 

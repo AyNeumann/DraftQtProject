@@ -38,11 +38,11 @@ void Dialog::init()
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
     connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobJFromForm);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
-
     connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MinCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MinMaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->pB_GetByName, &QPushButton::clicked, this, &Dialog::getBlobByName);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -53,12 +53,10 @@ void Dialog::init()
     QJsonArray types = getAllBlobJTypes();
 
     for(int i=0; i< types.count(); ++i){
-        qDebug() << types.at(i).toString();
         ui->cB_BlobJType->addItem(types.at(i).toString());
         ui->cB_BlobJType_Get->addItem(types.at(i).toString());
     }
 
-    ui->pB_GetByName->setEnabled(false);
     ui->pB_GetByType->setEnabled(false);
 }
 
@@ -137,7 +135,15 @@ void Dialog::getBlobByCount()
     QJsonDocument blobJList = getBlobJFromDB(url);
 
     displayResponse(&blobJList);
+}
 
+void Dialog::getBlobByName()
+{
+    QString url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
+
+    QJsonDocument blobJList = getBlobJFromDB(url);
+
+    displayResponse(&blobJList);
 }
 
 void Dialog::saveBlobJ()
@@ -163,8 +169,6 @@ void Dialog::deleteBlobJ()
     }
 
     QByteArray response_data = reply->readAll();
-
-    // qDebug() << "Response data: " << response_data;
 
     ui->pTE_View->document()->setPlainText(response_data);
 

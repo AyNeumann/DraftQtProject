@@ -27,13 +27,14 @@ private slots:
     void getAllBlobJs();
     void getBlobJById();
     void getBlobByCount();
+    void getBlobByName();
     void saveBlobJ();
     void deleteBlobJ();
     void displayResponse(QJsonDocument *json);
     void saveBlobJFromForm();
     void saveBlobJInDB(QJsonDocument blobJToSave);
-    QJsonDocument getBlobJFromDB(QString url);
 
+    QJsonDocument getBlobJFromDB(QString url);
     QJsonArray getAllBlobJTypes();
 
     void checkCountRadioButton();

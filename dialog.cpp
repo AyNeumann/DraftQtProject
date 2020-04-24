@@ -36,13 +36,14 @@ void Dialog::init()
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
-    connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobJFromForm);
+    connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
     connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MinCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MinMaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->pB_GetByName, &QPushButton::clicked, this, &Dialog::getBlobByName);
+    connect(ui->pB_GetByType, &QPushButton::clicked, this, &Dialog::getBlobByType);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -56,8 +57,6 @@ void Dialog::init()
         ui->cB_BlobJType->addItem(types.at(i).toString());
         ui->cB_BlobJType_Get->addItem(types.at(i).toString());
     }
-
-    ui->pB_GetByType->setEnabled(false);
 }
 
 void Dialog::getAllBlobJs()
@@ -146,13 +145,22 @@ void Dialog::getBlobByName()
     displayResponse(&blobJList);
 }
 
+void Dialog::getBlobByType()
+{
+    QString url = QString("http://localhost:8080/blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
+
+    QJsonDocument blobJList = getBlobJFromDB(url);
+
+    displayResponse(&blobJList);
+}
+
 void Dialog::saveBlobJ()
 {
     QString BlobJAsText = ui->pTE_View->toPlainText();
 
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
-    saveBlobJInDB(BlobJAsJson);
+    saveBlobInDB(BlobJAsJson);
 }
 
 void Dialog::deleteBlobJ()
@@ -182,7 +190,7 @@ void Dialog::displayResponse(QJsonDocument *json)
     ui->pTE_View->document()->setPlainText(strJson);
 }
 
-void Dialog::saveBlobJFromForm()
+void Dialog::saveBlobFromForm()
 {
     QJsonObject blobJToSave
     {
@@ -195,10 +203,10 @@ void Dialog::saveBlobJFromForm()
 
     qDebug() << blobJToSave;
 
-    saveBlobJInDB(QJsonDocument(blobJToSave));
+    saveBlobInDB(QJsonDocument(blobJToSave));
 }
 
-void Dialog::saveBlobJInDB(QJsonDocument blobJToSave)
+void Dialog::saveBlobInDB(QJsonDocument blobJToSave)
 {
     QString url = QString("http://localhost:8080/blobj/save");
     QNetworkRequest request(url);

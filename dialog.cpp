@@ -34,9 +34,15 @@ void Dialog::init()
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
+    connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
     connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobJFromForm);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
+
+    connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->rB_MinCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
+    connect(ui->rB_MinMaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -49,27 +55,20 @@ void Dialog::init()
     for(int i=0; i< types.count(); ++i){
         qDebug() << types.at(i).toString();
         ui->cB_BlobJType->addItem(types.at(i).toString());
+        ui->cB_BlobJType_Get->addItem(types.at(i).toString());
     }
+
+    ui->pB_GetByName->setEnabled(false);
+    ui->pB_GetByType->setEnabled(false);
 }
 
 void Dialog::getAllBlobJs()
 {
     QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = nam.get(request);
+    QJsonDocument blobJList = getBlobJFromDB(url);
 
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = QJsonDocument::fromJson(response_data);
-
-    displayResponse(&json);
+    displayResponse(&blobJList);
 
     //***********************************************************************
 
@@ -99,32 +98,46 @@ void Dialog::getAllBlobJs()
         qDebug() << blobJ;
         blobJ.clear();
     }*/
-
-
-
-    reply->deleteLater();
 }
 
 void Dialog::getBlobJById()
 {
     QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->sb_GetIdNumber->value());
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = nam.get(request);
+    QJsonDocument blobJ = getBlobJFromDB(url);
 
-    while (!reply->isFinished())
+    displayResponse(&blobJ);
+}
+
+void Dialog::getBlobByCount()
+{
+    QString url = "";
+
+    if(ui->rB_ExactCount->isChecked())
     {
-        qApp->processEvents();
+        url = QString("http://localhost:8080/blobj/byCount?count=%1")
+                .arg(ui->sB_BlobJCount1->value());
+    }
+    if(ui->rB_MinCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCountMin?minCount=%1")
+                .arg(ui->sB_BlobJCount1->value());
+    }
+    if(ui->rB_MaxCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCountMax?maxCount=%1")
+                .arg(ui->sB_BlobJCount1->value());
+    }
+    if(ui->rB_MinMaxCount->isChecked())
+    {
+        url = QString("http://localhost:8080/blobj/byCountTranche?minCount=%1&maxCount=%2")
+                .arg(ui->sB_BlobJCount1->value()).arg(ui->sB_BlobJCount2->value());
     }
 
-    QByteArray response_data = reply->readAll();
+    QJsonDocument blobJList = getBlobJFromDB(url);
 
-    QJsonDocument json = QJsonDocument::fromJson(response_data);
+    displayResponse(&blobJList);
 
-    displayResponse(&json);
-
-    reply->deleteLater();
 }
 
 void Dialog::saveBlobJ()
@@ -206,6 +219,27 @@ void Dialog::saveBlobJInDB(QJsonDocument blobJToSave)
     reply->deleteLater();
 }
 
+QJsonDocument Dialog::getBlobJFromDB(QString url)
+{
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.get(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = QJsonDocument::fromJson(response_data);
+
+    reply->deleteLater();
+
+    return json;
+}
+
 QJsonArray Dialog::getAllBlobJTypes()
 {
     QString url = QString("http://localhost:8080/type/all");
@@ -228,4 +262,14 @@ QJsonArray Dialog::getAllBlobJTypes()
     reply->deleteLater();
 
     return typesArray;
+}
+
+void Dialog::checkCountRadioButton()
+{
+    if(ui->rB_MinMaxCount->isChecked())
+    {
+        ui->sB_BlobJCount2->setEnabled(true);
+    } else {
+        ui->sB_BlobJCount2->setEnabled(false);
+    }
 }

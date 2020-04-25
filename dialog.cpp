@@ -33,7 +33,7 @@ void Dialog::init()
 
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
-    connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getBlobJById);
+    connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
     connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
@@ -51,11 +51,22 @@ void Dialog::init()
 
     ui->pB_GetAllAndSave->setEnabled(false);
 
+    connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender);
+    connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
+
     QJsonArray types = getAllBlobJTypes();
 
     for(int i=0; i< types.count(); ++i){
         ui->cB_BlobJType->addItem(types.at(i).toString());
         ui->cB_BlobJType_Get->addItem(types.at(i).toString());
+    }
+
+    QJsonArray tags = getAllTags();
+
+    qDebug() << "tags in Init: " << tags;
+
+    for(int i=0; i< tags.count(); ++i){
+        ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
     }
 }
 
@@ -66,40 +77,28 @@ void Dialog::getAllBlobJs()
     QJsonDocument blobJList = getBlobJFromDB(url);
 
     displayResponse(&blobJList);
-
-    //***********************************************************************
-
-    /*QString blobJ;
-
-    QString strReply = (QString)reply->readAll();
-
-    QJsonDocument json = QJsonDocument::fromJson(strReply.toUtf8());
-
-    QJsonObject jsonObject = json.object();
-
-    QJsonArray jsonArray = jsonObject["content"].toArray();
-
-    foreach (const QJsonValue & value, jsonArray) {
-        QJsonObject obj = value.toObject();
-        blobJ.append(
-                "id: " + obj["id"].toVariant().toString() +
-                " name: " + obj["name"].toString() +
-                " sign: " + obj["sign"].toString() +
-                " count: " + obj["count"].toVariant().toString() +
-                " rank: " + obj["rank"].toVariant().toString() +
-                " type: " + obj["type"].toString() +
-                " tag: " + obj["tag"].toVariant().toString() +
-                " linkedBlobJ: " +obj["linkedBlobJ"].toVariant().toString()
-                     );
-
-        qDebug() << blobJ;
-        blobJ.clear();
-    }*/
 }
 
-void Dialog::getBlobJById()
+void Dialog::getBlobById(QString btnName)
 {
-    QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->sb_GetIdNumber->value());
+    int arg = 0;
+
+    if(btnName == "Get By Id")
+    {
+        arg = ui->sb_GetIdNumber->value();
+    }
+
+    if(btnName == "View")
+    {
+        arg = ui->sB_BlobId_AddTag->value();
+    }
+
+    if(arg == 0)
+    {
+        return;
+    }
+
+    QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(arg);
 
     QJsonDocument blobJ = getBlobJFromDB(url);
 
@@ -201,7 +200,7 @@ void Dialog::saveBlobFromForm()
         {"type", ui->cB_BlobJType->currentText()},
     };
 
-    qDebug() << blobJToSave;
+    //qDebug() << blobJToSave;
 
     saveBlobInDB(QJsonDocument(blobJToSave));
 }
@@ -229,6 +228,11 @@ void Dialog::saveBlobInDB(QJsonDocument blobJToSave)
     ui->pTE_View->document()->setPlainText(strJson);
 
     reply->deleteLater();
+}
+
+void Dialog::addTagToBlob()
+{
+
 }
 
 QJsonDocument Dialog::getBlobJFromDB(QString url)
@@ -276,6 +280,33 @@ QJsonArray Dialog::getAllBlobJTypes()
     return typesArray;
 }
 
+QJsonArray Dialog::getAllTags()
+{
+    QString url = QString("http://localhost:8080/tag/all?pageNumber=0");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.get(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+
+    QJsonDocument tagsDocument = QJsonDocument::fromJson(response_data);
+
+    QJsonObject tagsObject = tagsDocument.object();
+
+    QJsonArray tagsArray = tagsObject["content"].toArray();
+
+    reply->deleteLater();
+
+    return tagsArray;
+}
+
 void Dialog::checkCountRadioButton()
 {
     if(ui->rB_MinMaxCount->isChecked())
@@ -284,4 +315,12 @@ void Dialog::checkCountRadioButton()
     } else {
         ui->sB_BlobJCount2->setEnabled(false);
     }
+}
+
+void Dialog::getSender()
+{
+    QPushButton *btn = static_cast<QPushButton*>(sender());
+    if(!btn) return;
+
+    getBlobById(btn->text());
 }

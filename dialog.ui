@@ -21,7 +21,7 @@
      </property>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_BlobGet">
        <attribute name="title">
@@ -43,7 +43,7 @@
            </size>
           </property>
           <property name="title">
-           <string>Get All BlobJs</string>
+           <string>Get All Blobs</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
@@ -343,7 +343,7 @@
        <attribute name="title">
         <string>BlobJ - Updt/Del</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_13">
+       <layout class="QVBoxLayout" name="verticalLayout_14">
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="sizePolicy">
@@ -359,7 +359,7 @@
            </size>
           </property>
           <property name="title">
-           <string>Save Blobj</string>
+           <string>Save Blob</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
@@ -394,6 +394,77 @@
             </layout>
            </item>
           </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_9">
+          <property name="title">
+           <string>Add Tag to Blob</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <item>
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Blob Id:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="sB_BlobId_AddTag"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pB_ViewBlob_AddTag">
+               <property name="text">
+                <string>View</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QComboBox" name="cB_TagName_AddTag"/>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_17">
+             <item>
+              <spacer name="horizontalSpacer_9">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pB_AddTag">
+               <property name="text">
+                <string>Add Tag</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
          </widget>
         </item>
         <item>
@@ -454,6 +525,19 @@
            </item>
           </layout>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>367</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>

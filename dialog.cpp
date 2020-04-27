@@ -36,7 +36,7 @@ void Dialog::init()
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
-    connect(ui->pB_SaveBlobJForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
+    connect(ui->pB_SaveBlobForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
     connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
@@ -57,13 +57,11 @@ void Dialog::init()
     QJsonArray types = getAllBlobJTypes();
 
     for(int i=0; i< types.count(); ++i){
-        ui->cB_BlobJType->addItem(types.at(i).toString());
+        ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
         ui->cB_BlobJType_Get->addItem(types.at(i).toString());
     }
 
     QJsonArray tags = getAllTags();
-
-    qDebug() << "tags in Init: " << tags;
 
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
@@ -193,14 +191,12 @@ void Dialog::saveBlobFromForm()
 {
     QJsonObject blobJToSave
     {
-        {"name", ui->lE_BlobJName->text()},
-        {"sign", ui->lE_BlobJSign->text()},
-        {"count", ui->sB_BlobJCount->value()},
-        {"rank", ui->sB_BlobJRank->value()},
-        {"type", ui->cB_BlobJType->currentText()},
+        {"name", ui->lE_BlobName_SaveForm->text()},
+        {"sign", ui->lE_BlobSign_SaveForm->text()},
+        {"count", ui->sB_BlobCount_SaveForm->value()},
+        {"rank", ui->sB_BlobRank_SaveForm->value()},
+        {"type", ui->cB_BlobType_SaveForm->currentText()},
     };
-
-    //qDebug() << blobJToSave;
 
     saveBlobInDB(QJsonDocument(blobJToSave));
 }
@@ -301,6 +297,13 @@ QJsonArray Dialog::getAllTags()
     QJsonObject tagsObject = tagsDocument.object();
 
     QJsonArray tagsArray = tagsObject["content"].toArray();
+
+    qDebug() << tagsArray;
+
+    for(const QJsonValue &tag : tagsArray) {
+        QJsonObject obj = tag.toObject();
+        qDebug() << obj;
+    }
 
     reply->deleteLater();
 

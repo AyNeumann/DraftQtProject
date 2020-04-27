@@ -35,9 +35,9 @@ void Dialog::init()
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobJs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
-    connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlobJ);
+    connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlob);
     connect(ui->pB_SaveBlobForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
-    connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlobJ);
+    connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlob);
     connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MinCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
@@ -53,12 +53,14 @@ void Dialog::init()
 
     connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender);
     connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
+    connect(ui->pB_Get_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::getBlobForUpdate);
 
     QJsonArray types = getAllBlobJTypes();
 
     for(int i=0; i< types.count(); ++i){
         ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
         ui->cB_BlobJType_Get->addItem(types.at(i).toString());
+        ui->cB_BlobType_UpdateForm->addItem(types.at(i).toString());
     }
 
     QJsonArray tags = getAllTags();
@@ -66,6 +68,8 @@ void Dialog::init()
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
     }
+
+    ui->pB_UpdateBlobForm->setEnabled(false);
 }
 
 void Dialog::getAllBlobJs()
@@ -151,7 +155,47 @@ void Dialog::getBlobByType()
     displayResponse(&blobJList);
 }
 
-void Dialog::saveBlobJ()
+void Dialog::getBlobForUpdate()
+{
+    QString url = "";
+
+    if(!ui->lE_BlobId_UpdateForm->text().isEmpty()) {
+        url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
+    } else if (!ui->lE_BlobName_UpdateForm->text().isEmpty()) {
+        url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobName_UpdateForm->text());
+    } else if (!ui->lE_BlobName_UpdateForm->text().isEmpty() && !ui->lE_BlobId_UpdateForm->text().isEmpty()) {
+        url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
+    }
+
+    QJsonDocument blobJsonDoc = getBlobJFromDB(url);
+
+    qDebug() << "JSON DOC" << blobJsonDoc;
+
+    QJsonObject blob;
+
+    if(blobJsonDoc.isObject()) {
+        blob = blobJsonDoc.object();
+    } else if (blobJsonDoc.isArray()) {
+        QJsonArray blobArray = blobJsonDoc.array();
+        blob = blobArray[0].toObject();
+    }
+
+
+    QString idAsString = QString::number(blob["id"].toDouble());
+
+    // Display in form
+    ui->lE_BlobId_UpdateForm->setText(idAsString);
+    ui->lE_BlobName_UpdateForm->setText(blob["name"].toString());
+    ui->lE_BlobSign_UpdateForm->setText(blob["sign"].toString());
+    ui->sB_BlobCount_UpdateForm->setValue(blob["count"].toInt());
+    ui->sB_BlobRank_UpdateForm->setValue(blob["rank"].toInt());
+    ui->cB_BlobType_UpdateForm->setCurrentText(blob["type"].toString());
+
+    // Display in main view
+    displayResponse(&blobJsonDoc);
+}
+
+void Dialog::saveBlob()
 {
     QString BlobJAsText = ui->pTE_View->toPlainText();
 
@@ -160,7 +204,7 @@ void Dialog::saveBlobJ()
     saveBlobInDB(BlobJAsJson);
 }
 
-void Dialog::deleteBlobJ()
+void Dialog::deleteBlob()
 {
     QString url = QString("http://localhost:8080/blobj/delete?id=%1").arg(ui->sb_DeleteIdNumber->value());
     QNetworkRequest request(url);
@@ -298,11 +342,8 @@ QJsonArray Dialog::getAllTags()
 
     QJsonArray tagsArray = tagsObject["content"].toArray();
 
-    qDebug() << tagsArray;
-
     for(const QJsonValue &tag : tagsArray) {
         QJsonObject obj = tag.toObject();
-        qDebug() << obj;
     }
 
     reply->deleteLater();

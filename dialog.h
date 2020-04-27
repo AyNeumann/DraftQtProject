@@ -29,8 +29,9 @@ private slots:
     void getBlobByCount();
     void getBlobByName();
     void getBlobByType();
-    void saveBlobJ();
-    void deleteBlobJ();
+    void getBlobForUpdate();
+    void saveBlob();
+    void deleteBlob();
     void displayResponse(QJsonDocument *json);
     void saveBlobFromForm();
     void saveBlobInDB(QJsonDocument blobJToSave);

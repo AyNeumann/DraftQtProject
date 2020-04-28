@@ -37,6 +37,7 @@ void Dialog::init()
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlob);
     connect(ui->pB_SaveBlobForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
+    connect(ui->pB_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::updateBlob);
     connect(ui->pB_Delete, &QPushButton::clicked, this, &Dialog::deleteBlob);
     connect(ui->rB_ExactCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->rB_MaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
@@ -68,8 +69,6 @@ void Dialog::init()
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
     }
-
-    ui->pB_UpdateBlobForm->setEnabled(false);
 }
 
 void Dialog::getAllBlobJs()
@@ -155,6 +154,51 @@ void Dialog::getBlobByType()
     displayResponse(&blobJList);
 }
 
+void Dialog::saveBlob()
+{
+    QString BlobJAsText = ui->pTE_View->toPlainText();
+
+    QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
+
+    saveBlobInDB(BlobJAsJson);
+}
+
+void Dialog::updateBlob()
+{
+    QString url = QString("http://localhost:8080/blobj/update");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QJsonObject bloJToUpdate
+    {
+        {"id", ui->lE_BlobId_UpdateForm->text()},
+        {"name", ui->lE_BlobName_UpdateForm->text()},
+        {"sign", ui->lE_BlobSign_UpdateForm->text()},
+        {"count", ui->sB_BlobCount_UpdateForm->value()},
+        {"rank", ui->sB_BlobRank_UpdateForm->value()},
+        {"type", ui->cB_BlobType_UpdateForm->currentText()},
+    };
+
+    QJsonDocument bloJToUpdateJson = QJsonDocument(bloJToUpdate);
+
+    QNetworkReply *reply = nam.put(request, bloJToUpdateJson.toJson());
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = QJsonDocument::fromJson(response_data);
+
+    QString strJson(json.toJson());
+
+    ui->pTE_View->document()->setPlainText(strJson);
+
+    reply->deleteLater();
+}
+
 void Dialog::getBlobForUpdate()
 {
     QString url = "";
@@ -168,8 +212,6 @@ void Dialog::getBlobForUpdate()
     }
 
     QJsonDocument blobJsonDoc = getBlobJFromDB(url);
-
-    qDebug() << "JSON DOC" << blobJsonDoc;
 
     QJsonObject blob;
 
@@ -193,15 +235,6 @@ void Dialog::getBlobForUpdate()
 
     // Display in main view
     displayResponse(&blobJsonDoc);
-}
-
-void Dialog::saveBlob()
-{
-    QString BlobJAsText = ui->pTE_View->toPlainText();
-
-    QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
-
-    saveBlobInDB(BlobJAsJson);
 }
 
 void Dialog::deleteBlob()

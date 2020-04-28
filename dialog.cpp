@@ -165,9 +165,6 @@ void Dialog::saveBlob()
 
 void Dialog::updateBlob()
 {
-    QString url = QString("http://localhost:8080/blobj/update");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QJsonObject bloJToUpdate
     {
@@ -179,24 +176,9 @@ void Dialog::updateBlob()
         {"type", ui->cB_BlobType_UpdateForm->currentText()},
     };
 
-    QJsonDocument bloJToUpdateJson = QJsonDocument(bloJToUpdate);
+    QJsonDocument bloJToUpdateDoc = QJsonDocument(bloJToUpdate);
 
-    QNetworkReply *reply = nam.put(request, bloJToUpdateJson.toJson());
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = QJsonDocument::fromJson(response_data);
-
-    QString strJson(json.toJson());
-
-    ui->pTE_View->document()->setPlainText(strJson);
-
-    reply->deleteLater();
+    updateBlobInDB(bloJToUpdateDoc);
 }
 
 void Dialog::getBlobForUpdate()
@@ -286,6 +268,30 @@ void Dialog::saveBlobInDB(QJsonDocument blobJToSave)
 
     QNetworkReply *reply = nam.post(request, blobJToSave.toJson());
 
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = QJsonDocument::fromJson(response_data);
+
+    QString strJson(json.toJson());
+
+    ui->pTE_View->document()->setPlainText(strJson);
+
+    reply->deleteLater();
+}
+
+void Dialog::updateBlobInDB(QJsonDocument blobJToUpdate)
+{
+    QString url = QString("http://localhost:8080/blobj/update");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.put(request, blobJToUpdate.toJson());
 
     while (!reply->isFinished())
     {

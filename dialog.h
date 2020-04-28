@@ -36,6 +36,7 @@ private slots:
     void displayResponse(QJsonDocument *json);
     void saveBlobFromForm();
     void saveBlobInDB(QJsonDocument blobJToSave);
+    void updateBlobInDB(QJsonDocument blobJToUpdate);
     void addTagToBlob();
 
     QJsonDocument getBlobJFromDB(QString url);

@@ -24,7 +24,7 @@ private:
     void init();
 
 private slots:
-    void getAllBlobJs();
+    void getAllBlobs();
     void getBlobById(QString btnName);
     void getBlobByCount();
     void getBlobByName();
@@ -39,8 +39,8 @@ private slots:
     void updateBlobInDB(QJsonDocument blobJToUpdate);
     void addTagToBlob();
 
-    QJsonDocument getBlobJFromDB(QString url);
-    QJsonArray getAllBlobJTypes();
+    QJsonDocument getBlobFromDB(QString url);
+    QJsonArray getAllBlobTypes();
     QJsonArray getAllTags();
 
     void checkCountRadioButton();

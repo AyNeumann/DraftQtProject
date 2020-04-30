@@ -46,6 +46,6 @@ private slots:
     void checkCountRadioButton();
     void getSender();
 
-    void handleHTTPErrors(QString error);
+    QJsonDocument handleHTTPErrors(QByteArray response_data, QNetworkReply *reply);
 };
 #endif // DIALOG_H

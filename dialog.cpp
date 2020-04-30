@@ -268,11 +268,16 @@ void Dialog::saveBlobInDB(QJsonDocument blobJToSave)
 
     QNetworkReply *reply = nam.post(request, blobJToSave.toJson());
 
-
     while (!reply->isFinished())
     {
         qApp->processEvents();
     }
+
+    /*if(reply->error() != QNetworkReply::NoError) {
+        qDebug() << "Error returned";
+        handleHTTPErrors(reply->errorString());
+        return;
+    }*/
 
     QByteArray response_data = reply->readAll();
 
@@ -314,8 +319,10 @@ void Dialog::addTagToBlob()
 
 }
 
-QJsonDocument Dialog::getBlobFromDB(QString url)
+QJsonDocument Dialog:: getBlobFromDB(QString url)
 {
+    QJsonDocument json;
+
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -328,7 +335,17 @@ QJsonDocument Dialog::getBlobFromDB(QString url)
 
     QByteArray response_data = reply->readAll();
 
-    QJsonDocument json = QJsonDocument::fromJson(response_data);
+    if(reply->error() != QNetworkReply::NoError) {
+        QJsonDocument errorJson = QJsonDocument::fromJson(response_data);
+        QJsonObject errorObject = errorJson.object();
+        QJsonObject errorMsg;
+        errorMsg.insert("Message", errorObject.value("message"));
+        errorMsg.insert("HttpError", errorObject.value("httpErrorNumber"));
+        QJsonDocument errorMsgJson(errorMsg);
+        json = errorMsgJson;
+    } else {
+        json = QJsonDocument::fromJson(response_data);
+    }
 
     reply->deleteLater();
 
@@ -374,7 +391,6 @@ QJsonArray Dialog::getAllTags()
 
     QByteArray response_data = reply->readAll();
 
-
     QJsonDocument tagsDocument = QJsonDocument::fromJson(response_data);
 
     QJsonObject tagsObject = tagsDocument.object();
@@ -406,4 +422,9 @@ void Dialog::getSender()
     if(!btn) return;
 
     getBlobById(btn->text());
+}
+
+void Dialog::handleHTTPErrors(QString error)
+{
+    ui->pTE_View->document()->setPlainText(error);
 }

@@ -45,5 +45,7 @@ private slots:
 
     void checkCountRadioButton();
     void getSender();
+
+    void handleHTTPErrors(QString error);
 };
 #endif // DIALOG_H

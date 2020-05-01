@@ -45,6 +45,9 @@ void Dialog::init()
     connect(ui->rB_MinMaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->pB_GetByName, &QPushButton::clicked, this, &Dialog::getBlobByName);
     connect(ui->pB_GetByType, &QPushButton::clicked, this, &Dialog::getBlobByType);
+    connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender);
+    connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
+    connect(ui->pB_Get_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::getBlobForUpdate);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -52,10 +55,11 @@ void Dialog::init()
 
     ui->pB_GetAllAndSave->setEnabled(false);
 
-    connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender);
-    connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
-    connect(ui->pB_Get_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::getBlobForUpdate);
+    initDataBindUi();
+}
 
+void Dialog::initDataBindUi()
+{
     QJsonArray types = getAllBlobTypes();
 
     for(int i=0; i< types.count(); ++i){

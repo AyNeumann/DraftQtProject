@@ -22,10 +22,17 @@ private:
     Ui::Dialog *ui;
 
     void init();
+    void initDataBindUi();
+    void getBlobById(QString btnName);
+    void displayResponse(QJsonDocument *json);
+    void saveBlobInDB(QJsonDocument blobJToSave);
+    void updateBlobInDB(QJsonDocument blobJToUpdate);
+    QJsonDocument getBlobFromDB(QString url);
+    QJsonArray getAllBlobTypes();
+    QJsonArray getAllTags();
 
 private slots:
     void getAllBlobs();
-    void getBlobById(QString btnName);
     void getBlobByCount();
     void getBlobByName();
     void getBlobByType();
@@ -33,15 +40,8 @@ private slots:
     void saveBlob();
     void updateBlob();
     void deleteBlob();
-    void displayResponse(QJsonDocument *json);
     void saveBlobFromForm();
-    void saveBlobInDB(QJsonDocument blobJToSave);
-    void updateBlobInDB(QJsonDocument blobJToUpdate);
     void addTagToBlob();
-
-    QJsonDocument getBlobFromDB(QString url);
-    QJsonArray getAllBlobTypes();
-    QJsonArray getAllTags();
 
     void checkCountRadioButton();
     void getSender();

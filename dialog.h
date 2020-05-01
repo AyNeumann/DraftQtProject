@@ -2,9 +2,15 @@
 #define DIALOG_H
 
 #include <QDialog>
-#include <QtNetwork>
 #include <QDebug>
+#include <QString>
+#include <QByteArray>
+#include <QJsonArray>
 #include <QJsonDocument>
+#include <QPixmap>
+#include <QIcon>
+
+#include "httpservice.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -25,11 +31,6 @@ private:
     void initDataBindUi();
     void getBlobById(QString btnName);
     void displayResponse(QJsonDocument *json);
-    void saveBlobInDB(QJsonDocument blobJToSave);
-    void updateBlobInDB(QJsonDocument blobJToUpdate);
-    QJsonDocument getBlobFromDB(QString url);
-    QJsonArray getAllBlobTypes();
-    QJsonArray getAllTags();
 
 private slots:
     void getAllBlobs();
@@ -45,7 +46,5 @@ private slots:
 
     void checkCountRadioButton();
     void getSender();
-
-    QJsonDocument handleHTTPErrors(QByteArray response_data, QNetworkReply *reply);
 };
 #endif // DIALOG_H

@@ -7,6 +7,12 @@
 #include <QByteArray>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QIODevice>
+#include <QTextStream>
+#include <QMessageBox>
 #include <QPixmap>
 #include <QIcon>
 
@@ -34,6 +40,7 @@ private:
 
 private slots:
     void getAllBlobs();
+    void getAllBlobsAndSave();
     void getBlobByCount();
     void getBlobByName();
     void getBlobByType();

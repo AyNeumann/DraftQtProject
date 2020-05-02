@@ -33,7 +33,7 @@ void Dialog::init()
     ui->splitter_2->setStretchFactor(1,3);
 
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobs);
-    connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobs);
+    connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobsAndSave);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlob);
@@ -56,7 +56,6 @@ void Dialog::init()
 
     initDataBindUi();
 
-    ui->pB_GetAllAndSave->setEnabled(false);
     ui->pB_AddTag->setEnabled(false);
 }
 
@@ -84,6 +83,29 @@ void Dialog::getAllBlobs()
     QJsonDocument blobJList = service->getBlob(url);
 
     displayResponse(&blobJList);
+}
+
+void Dialog::getAllBlobsAndSave()
+{
+    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
+
+    QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
+
+    QJsonDocument blobJList = service->getBlob(url);
+
+    displayResponse(&blobJList);
+
+    QFile file(blobStore);
+
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::critical(this, "Error", file.errorString());
+        return;
+    }
+
+    QTextStream stream(&file);
+    stream << ui->pTE_View->document()->toPlainText(); //THIS IS EMPTY!
+    file.close();
 }
 
 void Dialog::getBlobById(QString btnName)

@@ -23,7 +23,8 @@ Dialog::~Dialog()
     delete ui;
 }
 
-static httpService *service;
+static httpService *httpService;
+static blobStore *blobStore;
 
 void Dialog::init()
 {
@@ -32,9 +33,9 @@ void Dialog::init()
 
     ui->splitter_2->setStretchFactor(1,3);
 
-    connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getAllBlobs);
-    connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getAllBlobsAndSave);
-    connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender);
+    connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlob);
     connect(ui->pB_SaveBlobForm, &QPushButton::clicked, this, &Dialog::saveBlobFromForm);
@@ -46,7 +47,7 @@ void Dialog::init()
     connect(ui->rB_MinMaxCount, &QRadioButton::clicked, this, &Dialog::checkCountRadioButton);
     connect(ui->pB_GetByName, &QPushButton::clicked, this, &Dialog::getBlobByName);
     connect(ui->pB_GetByType, &QPushButton::clicked, this, &Dialog::getBlobByType);
-    connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender);
+    connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
     connect(ui->pB_Get_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::getBlobForUpdate);
 
@@ -61,7 +62,7 @@ void Dialog::init()
 
 void Dialog::initDataBindUi()
 {
-    QJsonArray types = service->getAllBlobTypes();
+    QJsonArray types = httpService->getAllBlobTypes();
 
     for(int i=0; i< types.count(); ++i){
         ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
@@ -69,55 +70,41 @@ void Dialog::initDataBindUi()
         ui->cB_BlobType_UpdateForm->addItem(types.at(i).toString());
     }
 
-    QJsonArray tags = service->getAllTags();
+    QJsonArray tags = httpService->getAllTags();
 
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
     }
 }
 
-void Dialog::getAllBlobs()
+void Dialog::getAllBlobs(QString btnName)
 {
     QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
 
-    QJsonDocument blobJList = service->getBlob(url);
+    QJsonDocument blobList = httpService->getBlob(url);
 
-    displayResponse(&blobJList);
-}
+    displayResponse(&blobList);
 
-void Dialog::getAllBlobsAndSave()
-{
-    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
-
-    QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
-
-    QJsonDocument blobJList = service->getBlob(url);
-
-    displayResponse(&blobJList);
-
-    QFile file(blobStore);
-
-    if(!file.open(QIODevice::WriteOnly))
+    if(btnName == "pB_GetAllAndSave")
     {
-        QMessageBox::critical(this, "Error", file.errorString());
-        return;
-    }
+        QString storeStatus = blobStore->storeAllBlobs(&blobList);
 
-    QTextStream stream(&file);
-    stream << ui->pTE_View->document()->toPlainText(); //THIS IS EMPTY!
-    file.close();
+        if(storeStatus != "OK") {
+            QMessageBox::critical(this, "Error", storeStatus);
+        }
+    }
 }
 
 void Dialog::getBlobById(QString btnName)
 {
     int arg = 0;
 
-    if(btnName == "Get By Id")
+    if(btnName == "pB_GetById")
     {
         arg = ui->sb_GetIdNumber->value();
     }
 
-    if(btnName == "View")
+    if(btnName == "pB_ViewBlob_AddTag")
     {
         arg = ui->sB_BlobId_AddTag->value();
     }
@@ -129,7 +116,7 @@ void Dialog::getBlobById(QString btnName)
 
     QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(arg);
 
-    QJsonDocument blobJ = service->getBlob(url);
+    QJsonDocument blobJ = httpService->getBlob(url);
 
     displayResponse(&blobJ);
 }
@@ -159,7 +146,7 @@ void Dialog::getBlobByCount()
                 .arg(ui->sB_BlobJCount1->value()).arg(ui->sB_BlobJCount2->value());
     }
 
-    QJsonDocument blobJList = service->getBlob(url);
+    QJsonDocument blobJList = httpService->getBlob(url);
 
     displayResponse(&blobJList);
 }
@@ -168,7 +155,7 @@ void Dialog::getBlobByName()
 {
     QString url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
 
-    QJsonDocument blobJList = service->getBlob(url);
+    QJsonDocument blobJList = httpService->getBlob(url);
 
     displayResponse(&blobJList);
 }
@@ -177,7 +164,7 @@ void Dialog::getBlobByType()
 {
     QString url = QString("http://localhost:8080/blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
 
-    QJsonDocument blobJList = service->getBlob(url);
+    QJsonDocument blobJList = httpService->getBlob(url);
 
     displayResponse(&blobJList);
 }
@@ -188,7 +175,7 @@ void Dialog::saveBlob()
 
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
-    QJsonDocument savedBlob = service->saveBlob(QJsonDocument(BlobJAsJson));
+    QJsonDocument savedBlob = httpService->saveBlob(QJsonDocument(BlobJAsJson));
 
     displayResponse(&savedBlob);
 }
@@ -208,7 +195,7 @@ void Dialog::updateBlob()
 
     QJsonDocument bloJToUpdateDoc = QJsonDocument(bloJToUpdate);
 
-    QJsonDocument updatedBlob = service->updateBlob(bloJToUpdateDoc);
+    QJsonDocument updatedBlob = httpService->updateBlob(bloJToUpdateDoc);
 
     displayResponse(&updatedBlob);
 }
@@ -225,7 +212,7 @@ void Dialog::getBlobForUpdate()
         url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
     }
 
-    QJsonDocument blobJsonDoc = service->getBlob(url);
+    QJsonDocument blobJsonDoc = httpService->getBlob(url);
 
     QJsonObject blob;
 
@@ -254,7 +241,7 @@ void Dialog::deleteBlob()
 {    
     int id = ui->sb_DeleteIdNumber->value();
 
-    QByteArray deletedBlob = service->deleteBlob(id);
+    QByteArray deletedBlob = httpService->deleteBlob(id);
 
     QJsonDocument deletedBlobJson = QJsonDocument::fromJson(deletedBlob);
 
@@ -272,7 +259,7 @@ void Dialog::saveBlobFromForm()
         {"type", ui->cB_BlobType_SaveForm->currentText()},
     };
 
-    QJsonDocument savedBlob = service->saveBlob(QJsonDocument(blobJToSave));
+    QJsonDocument savedBlob = httpService->saveBlob(QJsonDocument(blobJToSave));
 
     displayResponse(&savedBlob);
 }
@@ -300,10 +287,18 @@ void Dialog::checkCountRadioButton()
     }
 }
 
-void Dialog::getSender()
+void Dialog::getSentder_getAll()
 {
     QPushButton *btn = static_cast<QPushButton*>(sender());
     if(!btn) return;
 
-    getBlobById(btn->text());
+    getAllBlobs(btn->objectName());
+}
+
+void Dialog::getSender_getById()
+{
+    QPushButton *btn = static_cast<QPushButton*>(sender());
+    if(!btn) return;
+
+    getBlobById(btn->objectName());
 }

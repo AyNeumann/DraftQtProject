@@ -16,7 +16,8 @@
 #include <QPixmap>
 #include <QIcon>
 
-#include "httpservice.h"
+#include "http_service.h"
+#include "blob_store.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -35,12 +36,11 @@ private:
 
     void init();
     void initDataBindUi();
+    void getAllBlobs(QString btnName);
     void getBlobById(QString btnName);
     void displayResponse(QJsonDocument *json);
 
 private slots:
-    void getAllBlobs();
-    void getAllBlobsAndSave();
     void getBlobByCount();
     void getBlobByName();
     void getBlobByType();
@@ -52,6 +52,7 @@ private slots:
     void addTagToBlob();
 
     void checkCountRadioButton();
-    void getSender();
+    void getSentder_getAll();
+    void getSender_getById();
 };
 #endif // DIALOG_H

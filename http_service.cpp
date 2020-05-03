@@ -1,4 +1,4 @@
-#include "httpservice.h"
+#include "http_service.h"
 
 static QNetworkAccessManager nam;
 

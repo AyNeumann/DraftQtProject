@@ -1,4 +1,4 @@
-#include "httpservice.h"
+#include "http_service.h"
 
 static QNetworkAccessManager nam;
 
@@ -137,9 +137,9 @@ QJsonArray httpService::getAllTags()
 
     QJsonArray tagsArray = tagsObject["content"].toArray();
 
-    for(const QJsonValue &tag : tagsArray) {
+    /*for(const QJsonValue &tag : tagsArray) {
         QJsonObject obj = tag.toObject();
-    }
+    }*/
 
     reply->deleteLater();
 

@@ -36,11 +36,12 @@ private:
 
     void init();
     void initDataBindUi();
-    void getAllBlobs(QString btnName);
+    void getAllBlobsByPage(QString btnName);
     void getBlobById(QString btnName);
     void displayResponse(QJsonDocument *json);
 
 private slots:
+    void getAllBlobs();
     void getBlobByCount();
     void getBlobByName();
     void getBlobByType();

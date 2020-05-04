@@ -100,24 +100,30 @@ void Dialog::getAllBlobs()
 {
     int pageNumber = 0;
     bool isLast = false;
+    QString allBlobString;
+    QJsonArray allPagesArray;
 
     do {
         QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
         QJsonDocument blobList = httpService->getBlob(url);
-        displayResponse(&blobList);
+
+        QJsonArray pageContentArray = blobList.object()["content"].toArray();
+
+        allPagesArray.append(pageContentArray);
 
         isLast = blobList.object()["last"].toBool();
-        qDebug() << isLast;
         pageNumber++;
     }
-    while(isLast != true);
+    while(!isLast);
 
-    /*
-    QString storeStatus = blobStore->storeAllBlobs(&blobList);
+    QJsonDocument allPagesJsonDoc(allPagesArray);
+
+    displayResponse(&allPagesJsonDoc);
+
+    QString storeStatus = blobStore->storeAllBlobs(&allPagesJsonDoc);
     if(storeStatus != "OK") {
         QMessageBox::critical(this, "Error", storeStatus);
     }
-    */
 }
 
 void Dialog::getBlobById(QString btnName)
@@ -299,6 +305,11 @@ void Dialog::displayResponse(QJsonDocument *json)
     QString strJson(json->toJson());
 
     ui->pTE_View->document()->setPlainText(strJson);
+}
+
+void Dialog::displayResponse(QString string)
+{
+    ui->pTE_View->document()->setPlainText(string);
 }
 
 void Dialog::checkCountRadioButton()

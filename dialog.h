@@ -39,6 +39,7 @@ private:
     void getAllBlobsByPage(QString btnName);
     void getBlobById(QString btnName);
     void displayResponse(QJsonDocument *json);
+    void displayResponse(QString string);
 
 private slots:
     void getAllBlobs();

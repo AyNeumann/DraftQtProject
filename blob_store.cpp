@@ -7,13 +7,20 @@ blobStore::blobStore(QObject *parent) : QObject(parent)
 
 QString blobStore::storeAllBlobs(QJsonDocument *blobsToSaveJson)
 {
+    QJsonDocument blobsToSave;
+
+    if(blobsToSaveJson->isArray()) {
+        qDebug() << "IS ARRAY";
+        return "OK";
+    }
+
     QString returnMsg;
     QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
     QFile file(blobStore);
 
     QJsonObject blobsObj = blobsToSaveJson->object();
     QJsonArray blobsArray = blobsObj["content"].toArray();
-    QJsonDocument blobsToSave(blobsArray);
+    QJsonDocument blobsToSaveFromArray(blobsArray);
 
     if(!file.open(QIODevice::WriteOnly))
     {

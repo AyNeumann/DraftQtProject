@@ -35,6 +35,7 @@ void Dialog::init()
 
     connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
     connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetAllPages, &QPushButton::clicked, this, &Dialog::getAllBlobs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
     connect(ui->pB_Save, &QPushButton::clicked, this, &Dialog::saveBlob);
@@ -77,7 +78,7 @@ void Dialog::initDataBindUi()
     }
 }
 
-void Dialog::getAllBlobs(QString btnName)
+void Dialog::getAllBlobsByPage(QString btnName)
 {
     QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
 
@@ -92,6 +93,36 @@ void Dialog::getAllBlobs(QString btnName)
         if(storeStatus != "OK") {
             QMessageBox::critical(this, "Error", storeStatus);
         }
+    }
+}
+
+void Dialog::getAllBlobs()
+{
+    int pageNumber = 0;
+    bool isLast = false;
+    QString allBlobString;
+    QJsonArray allPagesArray;
+
+    do {
+        QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
+        QJsonDocument blobList = httpService->getBlob(url);
+
+        QJsonArray pageContentArray = blobList.object()["content"].toArray();
+
+        allPagesArray.append(pageContentArray);
+
+        isLast = blobList.object()["last"].toBool();
+        pageNumber++;
+    }
+    while(!isLast);
+
+    QJsonDocument allPagesJsonDoc(allPagesArray);
+
+    displayResponse(&allPagesJsonDoc);
+
+    QString storeStatus = blobStore->storeAllBlobs(&allPagesJsonDoc);
+    if(storeStatus != "OK") {
+        QMessageBox::critical(this, "Error", storeStatus);
     }
 }
 
@@ -276,6 +307,10 @@ void Dialog::displayResponse(QJsonDocument *json)
     ui->pTE_View->document()->setPlainText(strJson);
 }
 
+void Dialog::displayResponse(QString string)
+{
+    ui->pTE_View->document()->setPlainText(string);
+}
 
 void Dialog::checkCountRadioButton()
 {
@@ -292,7 +327,7 @@ void Dialog::getSentder_getAll()
     QPushButton *btn = static_cast<QPushButton*>(sender());
     if(!btn) return;
 
-    getAllBlobs(btn->objectName());
+    getAllBlobsByPage(btn->objectName());
 }
 
 void Dialog::getSender_getById()

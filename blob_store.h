@@ -20,7 +20,8 @@ class blobStore : public QObject
 public:
     explicit blobStore(QObject *parent = nullptr);
 
-    QString storeAllBlobs(QJsonDocument *BlobsToSave);
+    QString storeBlobsInTempStore(QJsonDocument *blobsToSave);
+    QString storeBlobs(QJsonDocument *blobsToSave);
 
 signals:
 

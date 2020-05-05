@@ -33,8 +33,8 @@ void Dialog::init()
 
     ui->splitter_2->setStretchFactor(1,3);
 
-    connect(ui->pB_GetAll, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
-    connect(ui->pB_GetAllAndSave, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetPageAndSave, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
     connect(ui->pB_GetAllPages, &QPushButton::clicked, this, &Dialog::getAllBlobs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
@@ -54,7 +54,8 @@ void Dialog::init()
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
-    ui->pB_GetAllAndSave->setIcon(ButtonIcon);
+    ui->pB_GetPageAndSave->setIcon(ButtonIcon);
+    ui->pB_GetAllPages->setIcon(ButtonIcon);
 
     initDataBindUi();
 
@@ -86,9 +87,9 @@ void Dialog::getAllBlobsByPage(QString btnName)
 
     displayResponse(&blobList);
 
-    if(btnName == "pB_GetAllAndSave")
+    if(btnName == "pB_GetPageAndSave")
     {
-        QString storeStatus = blobStore->storeAllBlobs(&blobList);
+        QString storeStatus = blobStore->storeBlobsInTempStore(&blobList);
 
         if(storeStatus != "OK") {
             QMessageBox::critical(this, "Error", storeStatus);
@@ -120,7 +121,7 @@ void Dialog::getAllBlobs()
 
     displayResponse(&allPagesJsonDoc);
 
-    QString storeStatus = blobStore->storeAllBlobs(&allPagesJsonDoc);
+    QString storeStatus = blobStore->storeBlobs(&allPagesJsonDoc);
     if(storeStatus != "OK") {
         QMessageBox::critical(this, "Error", storeStatus);
     }

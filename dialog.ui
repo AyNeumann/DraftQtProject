@@ -45,7 +45,7 @@
           <property name="title">
            <string>Get All Blobs</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <layout class="QVBoxLayout" name="verticalLayout_18">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
@@ -61,38 +61,36 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QPushButton" name="pB_GetPage">
+                 <property name="text">
+                  <string>Get Page</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pB_GetPageAndSave">
+                 <property name="text">
+                  <string>Get Page and Save</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
              <item>
               <widget class="QPushButton" name="pB_GetAllPages">
                <property name="text">
                 <string>Get All Pages</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pB_GetAll">
-               <property name="text">
-                <string>Get All</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pB_GetAllAndSave">
-               <property name="text">
-                <string>Get All and Save</string>
                </property>
               </widget>
              </item>

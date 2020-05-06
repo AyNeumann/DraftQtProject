@@ -107,7 +107,7 @@ QJsonArray httpService::getAllBlobTypes()
 
     QByteArray response_data = reply->readAll();
 
-    QJsonDocument types = QJsonDocument::fromJson(response_data);
+    QJsonDocument types = handleHTTPErrors(response_data, reply);
 
     QJsonArray typesArray = types.array();
 
@@ -136,10 +136,6 @@ QJsonArray httpService::getAllTags()
     QJsonObject tagsObject = tagsDocument.object();
 
     QJsonArray tagsArray = tagsObject["content"].toArray();
-
-    /*for(const QJsonValue &tag : tagsArray) {
-        QJsonObject obj = tag.toObject();
-    }*/
 
     reply->deleteLater();
 

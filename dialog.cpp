@@ -53,6 +53,8 @@ void Dialog::init()
     QIcon ButtonIcon(pixmap);
     ui->pB_GetPageAndSave->setIcon(ButtonIcon);
     ui->pB_GetAllPages->setIcon(ButtonIcon);
+    ui->pB_GetPageAndSave_Tag->setIcon(ButtonIcon);
+    ui->pB_GetAllPages_Tag->setIcon(ButtonIcon);
 
     initDataBindUi();
 

@@ -21,7 +21,7 @@
      </property>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_BlobGet">
        <attribute name="title">
@@ -567,23 +567,23 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox"/>
+              <widget class="QSpinBox" name="sB_PageNumber_Tag"/>
              </item>
             </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_20">
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="pb_GetPage_Tag">
                <property name="text">
-                <string>Get Page and Save</string>
+                <string>Get Page</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="pB_GetPageAndSave_Tag">
                <property name="text">
-                <string>Get Page</string>
+                <string>Get Page and Save</string>
                </property>
               </widget>
              </item>
@@ -597,7 +597,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_3">
+            <widget class="QPushButton" name="pB_GetAllPages_Tag">
              <property name="text">
               <string>Get All Pages</string>
              </property>
@@ -622,10 +622,10 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_2"/>
+              <widget class="QSpinBox" name="sb_GetIdNumber_Tag"/>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_4">
+              <widget class="QPushButton" name="pB_GetById_Tag">
                <property name="text">
                 <string>Get By Id</string>
                </property>
@@ -652,7 +652,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit"/>
+              <widget class="QLineEdit" name="lE_TagName_Get"/>
              </item>
             </layout>
            </item>
@@ -672,7 +672,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_5">
+              <widget class="QPushButton" name="pB_GetByName_Tag">
                <property name="text">
                 <string>Get By Name</string>
                </property>
@@ -699,7 +699,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox"/>
+              <widget class="QComboBox" name="cB_TagName_Get"/>
              </item>
             </layout>
            </item>
@@ -719,7 +719,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_6">
+              <widget class="QPushButton" name="pB_GetByNameStrict_Tag">
                <property name="text">
                 <string>Get By Name</string>
                </property>
@@ -746,7 +746,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_3"/>
+              <widget class="QSpinBox" name="sb_DeleteIdNumber_Tag"/>
              </item>
             </layout>
            </item>
@@ -760,7 +760,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit_2"/>
+              <widget class="QLineEdit" name="lE_DeleteNameNumber_Tag"/>
              </item>
             </layout>
            </item>
@@ -780,7 +780,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_7">
+              <widget class="QPushButton" name="pB_Delete_Tag">
                <property name="text">
                 <string>Delete</string>
                </property>

@@ -28,6 +28,8 @@ public:
 private:
     QJsonDocument handleHTTPErrors(QByteArray response_data, QNetworkReply *reply);
 
+    QNetworkAccessManager nam;
+
 signals:
 
 };

@@ -33,6 +33,8 @@ public:
 
 private:
     Ui::Dialog *ui;
+    httpService httpService;
+    blobStore blobStore;
 
     void init();
     void initDataBindUi();

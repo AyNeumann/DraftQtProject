@@ -1,7 +1,5 @@
 #include "http_service.h"
 
-static QNetworkAccessManager nam;
-
 httpService::httpService(QObject *parent) : QObject(parent)
 {
 

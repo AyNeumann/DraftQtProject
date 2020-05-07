@@ -23,9 +23,6 @@ Dialog::~Dialog()
     delete ui;
 }
 
-static httpService httpService;
-static blobStore blobStore;
-
 void Dialog::init()
 {
     setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);

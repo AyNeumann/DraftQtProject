@@ -31,21 +31,27 @@ QJsonDocument httpService::getAllBlobs()
     //TODO: if store has been initialize ? get data from sotre : get data from api
     int pageNumber = 0;
     bool isLast = false;
-    QString allBlobString;
     QJsonArray allPagesArray;
+    QJsonObject infos;
 
     do {
         QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
         QJsonDocument blobList = getBlob(url);
 
-        QJsonArray pageContentArray = blobList.object()["content"].toArray();
-
-        allPagesArray.append(pageContentArray);
+        allPagesArray.append(blobList.object()["content"]);
 
         isLast = blobList.object()["last"].toBool();
         pageNumber++;
-    }
-    while(!isLast);
+
+        if(isLast == true)
+        {
+            infos.insert("totalPages", blobList.object().value("totalPages"));
+            infos.insert("totalElements", blobList.object().value("totalElements"));
+            infos.insert("size", blobList.object().value("size"));
+            allPagesArray.append(infos);
+        }
+
+    } while(!isLast);
 
     QJsonDocument allPagesJsonDoc(allPagesArray);
 

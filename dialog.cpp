@@ -98,25 +98,8 @@ void Dialog::getAllBlobsByPage(QString btnName)
 
 void Dialog::getAllBlobs()
 {
-    int pageNumber = 0;
-    bool isLast = false;
-    QString allBlobString;
-    QJsonArray allPagesArray;
 
-    do {
-        QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
-        QJsonDocument blobList = httpService.getBlob(url);
-
-        QJsonArray pageContentArray = blobList.object()["content"].toArray();
-
-        allPagesArray.append(pageContentArray);
-
-        isLast = blobList.object()["last"].toBool();
-        pageNumber++;
-    }
-    while(!isLast);
-
-    QJsonDocument allPagesJsonDoc(allPagesArray);
+    QJsonDocument allPagesJsonDoc = httpService.getAllBlobs();
 
     displayResponse(&allPagesJsonDoc);
 

@@ -26,6 +26,32 @@ QJsonDocument httpService::getBlob(QString url)
     return json;
 }
 
+QJsonDocument httpService::getAllBlobs()
+{
+    //TODO: if store has been initialize ? get data from sotre : get data from api
+    int pageNumber = 0;
+    bool isLast = false;
+    QString allBlobString;
+    QJsonArray allPagesArray;
+
+    do {
+        QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
+        QJsonDocument blobList = getBlob(url);
+
+        QJsonArray pageContentArray = blobList.object()["content"].toArray();
+
+        allPagesArray.append(pageContentArray);
+
+        isLast = blobList.object()["last"].toBool();
+        pageNumber++;
+    }
+    while(!isLast);
+
+    QJsonDocument allPagesJsonDoc(allPagesArray);
+
+    return allPagesJsonDoc;
+}
+
 QJsonDocument httpService::updateBlob(QJsonDocument blobJToUpdate)
 {
     QString url = QString("http://localhost:8080/blobj/update");

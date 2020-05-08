@@ -18,6 +18,7 @@ public:
     explicit httpService(QObject *parent = nullptr);
 
     QJsonDocument getBlob(QString url);
+    QJsonDocument getAllBlobs();
     QJsonDocument updateBlob(QJsonDocument blobJToUpdate);
     QJsonDocument saveBlob(QJsonDocument blobJToSave);
     QByteArray deleteBlob(int id);

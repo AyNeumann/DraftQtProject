@@ -28,6 +28,8 @@ void Dialog::init()
     setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
     QWidget::setWindowTitle("Aapi Draft Qt Client");
 
+    ui->splitter->setStretchFactor(3,1);
+    ui->splitter->setStretchFactor(0,1);
     ui->splitter_2->setStretchFactor(1,3);
 
     connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSentder_getAll);

@@ -1,7 +1,5 @@
 #include "http_service.h"
 
-static QNetworkAccessManager nam;
-
 httpService::httpService(QObject *parent) : QObject(parent)
 {
 
@@ -26,6 +24,38 @@ QJsonDocument httpService::getBlob(QString url)
     reply->deleteLater();
 
     return json;
+}
+
+QJsonDocument httpService::getAllBlobs()
+{
+    //TODO: if store has been initialize ? get data from sotre : get data from api
+    int pageNumber = 0;
+    bool isLast = false;
+    QJsonArray allPagesArray;
+    QJsonObject infos;
+
+    do {
+        QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
+        QJsonDocument blobList = getBlob(url);
+
+        allPagesArray.append(blobList.object()["content"]);
+
+        isLast = blobList.object()["last"].toBool();
+        pageNumber++;
+
+        if(isLast == true)
+        {
+            infos.insert("totalPages", blobList.object().value("totalPages"));
+            infos.insert("totalElements", blobList.object().value("totalElements"));
+            infos.insert("size", blobList.object().value("size"));
+            allPagesArray.append(infos);
+        }
+
+    } while(!isLast);
+
+    QJsonDocument allPagesJsonDoc(allPagesArray);
+
+    return allPagesJsonDoc;
 }
 
 QJsonDocument httpService::updateBlob(QJsonDocument blobJToUpdate)

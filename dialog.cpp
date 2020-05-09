@@ -23,14 +23,13 @@ Dialog::~Dialog()
     delete ui;
 }
 
-static httpService httpService;
-static blobStore blobStore;
-
 void Dialog::init()
 {
     setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
     QWidget::setWindowTitle("Aapi Draft Qt Client");
 
+    ui->splitter->setStretchFactor(3,1);
+    ui->splitter->setStretchFactor(0,1);
     ui->splitter_2->setStretchFactor(1,3);
 
     connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
@@ -56,6 +55,8 @@ void Dialog::init()
     QIcon ButtonIcon(pixmap);
     ui->pB_GetPageAndSave->setIcon(ButtonIcon);
     ui->pB_GetAllPages->setIcon(ButtonIcon);
+    ui->pB_GetPageAndSave_Tag->setIcon(ButtonIcon);
+    ui->pB_GetAllPages_Tag->setIcon(ButtonIcon);
 
     initDataBindUi();
 
@@ -99,25 +100,8 @@ void Dialog::getAllBlobsByPage(QString btnName)
 
 void Dialog::getAllBlobs()
 {
-    int pageNumber = 0;
-    bool isLast = false;
-    QString allBlobString;
-    QJsonArray allPagesArray;
 
-    do {
-        QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
-        QJsonDocument blobList = httpService.getBlob(url);
-
-        QJsonArray pageContentArray = blobList.object()["content"].toArray();
-
-        allPagesArray.append(pageContentArray);
-
-        isLast = blobList.object()["last"].toBool();
-        pageNumber++;
-    }
-    while(!isLast);
-
-    QJsonDocument allPagesJsonDoc(allPagesArray);
+    QJsonDocument allPagesJsonDoc = httpService.getAllBlobs();
 
     displayResponse(&allPagesJsonDoc);
 

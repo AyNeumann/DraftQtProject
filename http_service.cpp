@@ -36,18 +36,18 @@ QJsonDocument httpService::getAll(QString url)
 
     do {
         QString requestUrl = QString(url + "?pageNumber=%1").arg(pageNumber);
-        QJsonDocument blobList = get(requestUrl);
+        QJsonDocument objectList = get(requestUrl);
 
-        allPagesArray.append(blobList.object()["content"]);
+        allPagesArray.append(objectList.object()["content"]);
 
-        isLast = blobList.object()["last"].toBool();
+        isLast = objectList.object()["last"].toBool();
         pageNumber++;
 
         if(isLast == true)
         {
-            infos.insert("totalPages", blobList.object().value("totalPages"));
-            infos.insert("totalElements", blobList.object().value("totalElements"));
-            infos.insert("size", blobList.object().value("size"));
+            infos.insert("totalPages", objectList.object().value("totalPages"));
+            infos.insert("totalElements", objectList.object().value("totalElements"));
+            infos.insert("size", objectList.object().value("size"));
             allPagesArray.append(infos);
         }
 
@@ -58,7 +58,6 @@ QJsonDocument httpService::getAll(QString url)
     return allPagesJsonDoc;
 }
 
-//FOR TYPES
 QJsonArray httpService::getAll_JsonArray(QString url)
 {
     QString requestUrl = QString(url);
@@ -83,7 +82,6 @@ QJsonArray httpService::getAll_JsonArray(QString url)
     return typesArray;
 }
 
-//FOR TAGS
 QJsonArray httpService::getPage_JsonArray(QString url)
 {
     QString requestUrl = QString(url + "?pageNumber=0");
@@ -99,24 +97,24 @@ QJsonArray httpService::getPage_JsonArray(QString url)
 
     QByteArray response_data = reply->readAll();
 
-    QJsonDocument tagsDocument = QJsonDocument::fromJson(response_data);
+    QJsonDocument responseDataDoc = QJsonDocument::fromJson(response_data);
 
-    QJsonObject tagsObject = tagsDocument.object();
+    QJsonObject responseDataObject = responseDataDoc.object();
 
-    QJsonArray tagsArray = tagsObject["content"].toArray();
+    QJsonArray responseDataArray = responseDataObject["content"].toArray();
 
     reply->deleteLater();
 
-    return tagsArray;
+    return responseDataArray;
 }
 
-QJsonDocument httpService::save(QString url, QJsonDocument blobJToSave)
+QJsonDocument httpService::save(QString url, QJsonDocument objectToSave)
 {
     QString requestUrl = QString(url);
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = nam.post(request, blobJToSave.toJson());
+    QNetworkReply *reply = nam.post(request, objectToSave.toJson());
 
     while (!reply->isFinished())
     {
@@ -132,13 +130,13 @@ QJsonDocument httpService::save(QString url, QJsonDocument blobJToSave)
     return json;
 }
 
-QJsonDocument httpService::update(QString url, QJsonDocument blobJToUpdate)
+QJsonDocument httpService::update(QString url, QJsonDocument objectToUpdate)
 {
     QString requestUrl = QString(url);
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply *reply = nam.put(request, blobJToUpdate.toJson());
+    QNetworkReply *reply = nam.put(request, objectToUpdate.toJson());
 
     while (!reply->isFinished())
     {

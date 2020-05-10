@@ -60,7 +60,6 @@ QJsonDocument httpService::getAll(QString url)
 
 QJsonArray httpService::getAll_JsonArray(QString url)
 {
-    QString requestUrl = QString(url);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -110,8 +109,7 @@ QJsonArray httpService::getPage_JsonArray(QString url)
 
 QJsonDocument httpService::save(QString url, QJsonDocument objectToSave)
 {
-    QString requestUrl = QString(url);
-    QNetworkRequest request(requestUrl);
+    QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.post(request, objectToSave.toJson());
@@ -132,8 +130,7 @@ QJsonDocument httpService::save(QString url, QJsonDocument objectToSave)
 
 QJsonDocument httpService::update(QString url, QJsonDocument objectToUpdate)
 {
-    QString requestUrl = QString(url);
-    QNetworkRequest request(requestUrl);
+    QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.put(request, objectToUpdate.toJson());

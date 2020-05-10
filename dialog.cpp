@@ -65,7 +65,7 @@ void Dialog::init()
 
 void Dialog::initDataBindUi()
 {
-    QJsonArray types = httpService.getAllBlobTypes();
+    QJsonArray types = httpService.getAll_JsonArray("http://localhost:8080/type/all");
 
     for(int i=0; i< types.count(); ++i){
         ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
@@ -73,7 +73,7 @@ void Dialog::initDataBindUi()
         ui->cB_BlobType_UpdateForm->addItem(types.at(i).toString());
     }
 
-    QJsonArray tags = httpService.getAllTags();
+    QJsonArray tags = httpService.getPage_JsonArray("http://localhost:8080/tag/all?pageNumber=0");
 
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
@@ -84,7 +84,7 @@ void Dialog::getAllBlobsByPage(QString btnName)
 {
     QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
 
-    QJsonDocument blobList = httpService.getBlob(url);
+    QJsonDocument blobList = httpService.get(url);
 
     displayResponse(&blobList);
 
@@ -101,7 +101,7 @@ void Dialog::getAllBlobsByPage(QString btnName)
 void Dialog::getAllBlobs()
 {
 
-    QJsonDocument allPagesJsonDoc = httpService.getAllBlobs();
+    QJsonDocument allPagesJsonDoc = httpService.getAll("http://localhost:8080/blobj/all");
 
     displayResponse(&allPagesJsonDoc);
 
@@ -132,7 +132,7 @@ void Dialog::getBlobById(QString btnName)
 
     QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(arg);
 
-    QJsonDocument blobJ = httpService.getBlob(url);
+    QJsonDocument blobJ = httpService.get(url);
 
     displayResponse(&blobJ);
 }
@@ -162,7 +162,7 @@ void Dialog::getBlobByCount()
                 .arg(ui->sB_BlobJCount1->value()).arg(ui->sB_BlobJCount2->value());
     }
 
-    QJsonDocument blobJList = httpService.getBlob(url);
+    QJsonDocument blobJList = httpService.get(url);
 
     displayResponse(&blobJList);
 }
@@ -171,7 +171,7 @@ void Dialog::getBlobByName()
 {
     QString url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
 
-    QJsonDocument blobJList = httpService.getBlob(url);
+    QJsonDocument blobJList = httpService.get(url);
 
     displayResponse(&blobJList);
 }
@@ -180,7 +180,7 @@ void Dialog::getBlobByType()
 {
     QString url = QString("http://localhost:8080/blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
 
-    QJsonDocument blobJList = httpService.getBlob(url);
+    QJsonDocument blobJList = httpService.get(url);
 
     displayResponse(&blobJList);
 }
@@ -191,7 +191,7 @@ void Dialog::saveBlob()
 
     QJsonDocument BlobJAsJson = QJsonDocument::fromJson(BlobJAsText.toUtf8());
 
-    QJsonDocument savedBlob = httpService.saveBlob(QJsonDocument(BlobJAsJson));
+    QJsonDocument savedBlob = httpService.save("http://localhost:8080/blobj/save", QJsonDocument(BlobJAsJson));
 
     displayResponse(&savedBlob);
 }
@@ -211,7 +211,7 @@ void Dialog::updateBlob()
 
     QJsonDocument bloJToUpdateDoc = QJsonDocument(bloJToUpdate);
 
-    QJsonDocument updatedBlob = httpService.updateBlob(bloJToUpdateDoc);
+    QJsonDocument updatedBlob = httpService.update("http://localhost:8080/blobj/update", bloJToUpdateDoc);
 
     displayResponse(&updatedBlob);
 }
@@ -228,7 +228,7 @@ void Dialog::getBlobForUpdate()
         url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
     }
 
-    QJsonDocument blobJsonDoc = httpService.getBlob(url);
+    QJsonDocument blobJsonDoc = httpService.get(url);
 
     QJsonObject blob;
 
@@ -257,11 +257,11 @@ void Dialog::deleteBlob()
 {    
     int id = ui->sb_DeleteIdNumber->value();
 
-    QByteArray deletedBlob = httpService.deleteBlob(id);
+    QByteArray deletedBlob = httpService.deleteObj("http://localhost:8080/blobj/delete", id);
 
-    QJsonDocument deletedBlobJson = QJsonDocument::fromJson(deletedBlob);
+    QString deletedBlobAsString = QString(deletedBlob);
 
-    displayResponse(&deletedBlobJson);
+    displayResponse(deletedBlobAsString);
 }
 
 void Dialog::saveBlobFromForm()
@@ -275,7 +275,7 @@ void Dialog::saveBlobFromForm()
         {"type", ui->cB_BlobType_SaveForm->currentText()},
     };
 
-    QJsonDocument savedBlob = httpService.saveBlob(QJsonDocument(blobJToSave));
+    QJsonDocument savedBlob = httpService.save("http://localhost:8080/blobj/save", QJsonDocument(blobJToSave));
 
     displayResponse(&savedBlob);
 }
@@ -322,3 +322,14 @@ void Dialog::getSender_getById()
 
     getBlobById(btn->objectName());
 }
+
+// ----- USEFUL CODE SAMPLES: -----
+// Checking Json parsing errors:
+/*
+QJsonParseError jsonError;
+QJsonDocument configJsonDoc = QJsonDocument::fromJson(response_data, &jsonError);
+if( jsonError.error != QJsonParseError::NoError )
+     qDebug() << QString("Json error: %1").arg(jsonError.errorString());
+else if( configJsonDoc .isNull() )
+     qDebug() << "Null JsonDocument";
+*/

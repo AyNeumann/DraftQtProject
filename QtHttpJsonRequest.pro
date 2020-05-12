@@ -17,12 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     blob_store.cpp \
+    configuration.cpp \
     http_service.cpp \
     main.cpp \
     dialog.cpp
 
 HEADERS += \
     blob_store.h \
+    configuration.h \
     dialog.h \
     http_service.h
 

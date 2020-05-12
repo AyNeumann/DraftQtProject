@@ -11,6 +11,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include "configuration.h"
+
 class httpService : public QObject
 {
     Q_OBJECT
@@ -29,7 +31,9 @@ public:
 private:
     QJsonDocument handleHTTPErrors(QByteArray response_data, QNetworkReply *reply);
 
+    configuration config;
     QNetworkAccessManager nam;
+    QString m_apiUrl;
 
 signals:
 

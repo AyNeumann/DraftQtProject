@@ -322,14 +322,3 @@ void Dialog::getSender_getById()
 
     getBlobById(btn->objectName());
 }
-
-// ----- USEFUL CODE SAMPLES: -----
-// Checking Json parsing errors:
-/*
-QJsonParseError jsonError;
-QJsonDocument configJsonDoc = QJsonDocument::fromJson(response_data, &jsonError);
-if( jsonError.error != QJsonParseError::NoError )
-     qDebug() << QString("Json error: %1").arg(jsonError.errorString());
-else if( configJsonDoc .isNull() )
-     qDebug() << "Null JsonDocument";
-*/

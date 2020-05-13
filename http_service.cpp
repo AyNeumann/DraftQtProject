@@ -2,7 +2,7 @@
 
 httpService::httpService(QObject *parent) : QObject(parent)
 {
-    m_apiUrl = config.getApiUrl();
+    m_apiUrl = config->getApiUrl();
     qDebug() << "Http service m_apiUrl: " <<  m_apiUrl;
 }
 

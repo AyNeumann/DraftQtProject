@@ -31,7 +31,7 @@ public:
 private:
     QJsonDocument handleHTTPErrors(QByteArray response_data, QNetworkReply *reply);
 
-    configuration config;
+    configuration *config = new configuration(this);
     QNetworkAccessManager nam;
     QString m_apiUrl;
 

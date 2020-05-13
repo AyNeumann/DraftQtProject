@@ -2,6 +2,10 @@
 #include "ui_dialog.h"
 
 /**
+ * for configuration variables
+ * @see: https://forum.qt.io/topic/114664/how-to-set-environment-variables-properly/11
+ */
+/**
  * @see: https://amin-ahmadi.com/2016/01/17/how-to-send-and-receive-json-requests-in-qt/
  * @see: https://makina-corpus.com/blog/metier/archives/access-json-webservice-qt-c
  * @see: http://erickveil.github.io/2016/04/06/How-To-Manipulate-JSON-With-C++-and-Qt.html
@@ -9,6 +13,7 @@
  * @brief Dialog::Dialog
  * @param parent
  */
+
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)

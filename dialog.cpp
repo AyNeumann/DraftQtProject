@@ -87,7 +87,7 @@ void Dialog::initDataBindUi()
 
 void Dialog::getAllBlobsByPage(QString btnName)
 {
-    QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
+    QString url = QString("blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
 
     QJsonDocument blobList = httpService.getBlob(url);
 
@@ -135,7 +135,7 @@ void Dialog::getBlobById(QString btnName)
         return;
     }
 
-    QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(arg);
+    QString url = QString("blobj/byId?id=%1").arg(arg);
 
     QJsonDocument blobJ = httpService.getBlob(url);
 
@@ -148,22 +148,22 @@ void Dialog::getBlobByCount()
 
     if(ui->rB_ExactCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCount?count=%1")
+        url = QString("blobj/byCount?count=%1")
                 .arg(ui->sB_BlobJCount1->value());
     }
     if(ui->rB_MinCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCountMin?minCount=%1")
+        url = QString("blobj/byCountMin?minCount=%1")
                 .arg(ui->sB_BlobJCount1->value());
     }
     if(ui->rB_MaxCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCountMax?maxCount=%1")
+        url = QString("blobj/byCountMax?maxCount=%1")
                 .arg(ui->sB_BlobJCount1->value());
     }
     if(ui->rB_MinMaxCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCountTranche?minCount=%1&maxCount=%2")
+        url = QString("blobj/byCountTranche?minCount=%1&maxCount=%2")
                 .arg(ui->sB_BlobJCount1->value()).arg(ui->sB_BlobJCount2->value());
     }
 
@@ -174,7 +174,7 @@ void Dialog::getBlobByCount()
 
 void Dialog::getBlobByName()
 {
-    QString url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
+    QString url = QString("blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
 
     QJsonDocument blobJList = httpService.getBlob(url);
 
@@ -183,7 +183,7 @@ void Dialog::getBlobByName()
 
 void Dialog::getBlobByType()
 {
-    QString url = QString("http://localhost:8080/blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
+    QString url = QString("blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
 
     QJsonDocument blobJList = httpService.getBlob(url);
 
@@ -226,11 +226,11 @@ void Dialog::getBlobForUpdate()
     QString url = "";
 
     if(!ui->lE_BlobId_UpdateForm->text().isEmpty()) {
-        url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
+        url = QString("blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
     } else if (!ui->lE_BlobName_UpdateForm->text().isEmpty()) {
-        url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobName_UpdateForm->text());
+        url = QString("blobj/byName?name=%1").arg(ui->lE_BlobName_UpdateForm->text());
     } else if (!ui->lE_BlobName_UpdateForm->text().isEmpty() && !ui->lE_BlobId_UpdateForm->text().isEmpty()) {
-        url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
+        url = QString("blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
     }
 
     QJsonDocument blobJsonDoc = httpService.getBlob(url);

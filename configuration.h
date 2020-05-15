@@ -7,6 +7,7 @@
 #include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QtXml>
 
 #include <QDebug>
 

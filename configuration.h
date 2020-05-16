@@ -24,6 +24,8 @@ private:
     QString m_apiUrl;
 
     void init();
+    void getConfigurationJsonFile();
+    void getConfigurationXmlFile();
 
 signals:
 

@@ -2,12 +2,15 @@
 
 httpService::httpService(QObject *parent) : QObject(parent)
 {
-
+    m_apiUrl = config->getApiUrl();
+    qDebug() << "Http service m_apiUrl: " <<  m_apiUrl;
 }
 
-QJsonDocument httpService::getBlob(QString url)
+QJsonDocument httpService::get(QString url)
 {
-    QNetworkRequest request(url);
+    QString fullUrl = m_apiUrl + url;
+
+    QNetworkRequest request(fullUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.get(request);
@@ -26,7 +29,7 @@ QJsonDocument httpService::getBlob(QString url)
     return json;
 }
 
-QJsonDocument httpService::getAllBlobs()
+QJsonDocument httpService::getAll(QString url)
 {
     //TODO: if store has been initialize ? get data from sotre : get data from api
     int pageNumber = 0;
@@ -35,19 +38,19 @@ QJsonDocument httpService::getAllBlobs()
     QJsonObject infos;
 
     do {
-        QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(pageNumber);
+        QString url = QString("blobj/all?pageNumber=%1").arg(pageNumber);
         QJsonDocument blobList = getBlob(url);
-
+        qDebug() << "http-service: blobList" << blobList;
         allPagesArray.append(blobList.object()["content"]);
 
-        isLast = blobList.object()["last"].toBool();
+        isLast = objectList.object()["last"].toBool();
         pageNumber++;
 
         if(isLast == true)
         {
-            infos.insert("totalPages", blobList.object().value("totalPages"));
-            infos.insert("totalElements", blobList.object().value("totalElements"));
-            infos.insert("size", blobList.object().value("size"));
+            infos.insert("totalPages", objectList.object().value("totalPages"));
+            infos.insert("totalElements", objectList.object().value("totalElements"));
+            infos.insert("size", objectList.object().value("size"));
             allPagesArray.append(infos);
         }
 
@@ -58,73 +61,9 @@ QJsonDocument httpService::getAllBlobs()
     return allPagesJsonDoc;
 }
 
-QJsonDocument httpService::updateBlob(QJsonDocument blobJToUpdate)
+QJsonArray httpService::getAll_JsonArray(QString url)
 {
-    QString url = QString("http://localhost:8080/blobj/update");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = nam.put(request, blobJToUpdate.toJson());
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = handleHTTPErrors(response_data, reply);
-
-    reply->deleteLater();
-
-    return json;
-}
-
-QJsonDocument httpService::saveBlob(QJsonDocument blobJToSave)
-{
-    QString url = QString("http://localhost:8080/blobj/save");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = nam.post(request, blobJToSave.toJson());
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = handleHTTPErrors(response_data, reply);
-
-    reply->deleteLater();
-
-    return json;
-}
-
-QByteArray httpService::deleteBlob(int id)
-{
-    QString url = QString("http://localhost:8080/blobj/delete?id=%1").arg(id);
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = nam.deleteResource(request);
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    reply->deleteLater();
-
-    return response_data;
-}
-
-QJsonArray httpService::getAllBlobTypes()
-{
-    QString url = QString("http://localhost:8080/type/all");
+    QString url = m_apiUrl + "blobj/update";
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -146,9 +85,9 @@ QJsonArray httpService::getAllBlobTypes()
     return typesArray;
 }
 
-QJsonArray httpService::getAllTags()
+QJsonArray httpService::getPage_JsonArray(QString url)
 {
-    QString url = QString("http://localhost:8080/tag/all?pageNumber=0");
+    QString url = m_apiUrl + "blobj/save";
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -161,16 +100,82 @@ QJsonArray httpService::getAllTags()
 
     QByteArray response_data = reply->readAll();
 
-    QJsonDocument tagsDocument = QJsonDocument::fromJson(response_data);
+    QJsonDocument responseDataDoc = QJsonDocument::fromJson(response_data);
 
-    QJsonObject tagsObject = tagsDocument.object();
+    QJsonObject responseDataObject = responseDataDoc.object();
 
-    QJsonArray tagsArray = tagsObject["content"].toArray();
+    QJsonArray responseDataArray = responseDataObject["content"].toArray();
 
     reply->deleteLater();
 
-    return tagsArray;
+    return responseDataArray;
 }
+
+QJsonDocument httpService::save(QString url, QJsonDocument objectToSave)
+{
+    QString url = QString("/blobj/delete?id=%1").arg(id);
+    QString fullUrl = m_apiUrl + "blobj/save";
+    QNetworkRequest request(fullUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.post(request, objectToSave.toJson());
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = handleHTTPErrors(response_data, reply);
+
+    reply->deleteLater();
+
+    return json;
+}
+
+QJsonDocument httpService::update(QString url, QJsonDocument objectToUpdate)
+{
+    QString url = m_apiUrl + "type/all";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.put(request, objectToUpdate.toJson());
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = handleHTTPErrors(response_data, reply);
+
+    reply->deleteLater();
+
+    return json;
+}
+
+QByteArray httpService::deleteObj(QString url, int id)
+{
+    QString url = m_apiUrl + "tag/all?pageNumber=0";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.deleteResource(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    reply->deleteLater();
+
+    return response_data;
+}
+
 
 QJsonDocument httpService::handleHTTPErrors(QByteArray response_data, QNetworkReply *reply)
 {

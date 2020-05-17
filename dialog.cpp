@@ -76,7 +76,7 @@ void Dialog::init()
 
 void Dialog::initDataBindUi()
 {
-    QJsonArray types = httpService.getAll_JsonArray("http://localhost:8080/type/all");
+    QJsonArray types = httpService.getAll_JsonArray("type/all");
 
     for(int i=0; i< types.count(); ++i){
         ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
@@ -84,7 +84,7 @@ void Dialog::initDataBindUi()
         ui->cB_BlobType_UpdateForm->addItem(types.at(i).toString());
     }
 
-    QJsonArray tags = httpService.getPage_JsonArray("http://localhost:8080/tag/all?pageNumber=0");
+    QJsonArray tags = httpService.getPage_JsonArray("tag/all?pageNumber=0");
 
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
@@ -112,7 +112,7 @@ void Dialog::getAllBlobsByPage(QString btnName)
 void Dialog::getAllBlobs()
 {
 
-    QJsonDocument allPagesJsonDoc = httpService.getAll("http://localhost:8080/blobj/all");
+    QJsonDocument allPagesJsonDoc = httpService.getAll("blobj/all");
 
     displayResponse(&allPagesJsonDoc);
 
@@ -322,8 +322,8 @@ void Dialog::resetForm(QString btnName)
 {
     if(btnName == "pB_resetSaveForm")
     {
-        ui->lE_BlobName_SaveForm->setText("");
-        ui->lE_BlobSign_SaveForm->setText("");
+        ui->lE_BlobName_SaveForm->clear();
+        ui->lE_BlobSign_SaveForm->clear();
         ui->sB_BlobCount_SaveForm->setValue(0);
         ui->sB_BlobRank_SaveForm->setValue(0);
         ui->cB_BlobType_SaveForm->setCurrentIndex(0);
@@ -331,9 +331,9 @@ void Dialog::resetForm(QString btnName)
 
     if(btnName == "pB_resetUpdateForm")
     {
-        ui->lE_BlobId_UpdateForm->setText("");
-        ui->lE_BlobName_UpdateForm->setText("");
-        ui->lE_BlobSign_UpdateForm->setText("");
+        ui->lE_BlobId_UpdateForm->clear();
+        ui->lE_BlobName_UpdateForm->clear();
+        ui->lE_BlobSign_UpdateForm->clear();
         ui->sB_BlobCount_UpdateForm->setValue(0);
         ui->sB_BlobRank_UpdateForm->setValue(0);
         ui->cB_BlobType_UpdateForm->setCurrentIndex(0);

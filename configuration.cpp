@@ -35,8 +35,6 @@ void configuration::getConfigurationJsonFile()
     QJsonObject configObject = configJson.object();
 
     m_apiUrl = configObject["apiUrl"].toString();
-
-    qDebug() << "configuration m_apiUrl: " << m_apiUrl;
 }
 
 void configuration::getConfigurationXmlFile()
@@ -59,7 +57,6 @@ void configuration::getConfigurationXmlFile()
         if (reader->name() == "api_url")
         {
             m_apiUrl = reader->readElementText();
-            qDebug() << "[configuration.cpp | getConfigurationXmlFile] m_apiUrl: " << m_apiUrl;
         }
     }
 }

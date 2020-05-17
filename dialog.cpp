@@ -32,8 +32,8 @@ void Dialog::init()
     ui->splitter->setStretchFactor(0,1);
     ui->splitter_2->setStretchFactor(1,3);
 
-    connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
-    connect(ui->pB_GetPageAndSave, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSender_getAll);
+    connect(ui->pB_GetPageAndSave, &QPushButton::clicked, this, &Dialog::getSender_getAll);
     connect(ui->pB_GetAllPages, &QPushButton::clicked, this, &Dialog::getAllBlobs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
@@ -50,6 +50,8 @@ void Dialog::init()
     connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
     connect(ui->pB_Get_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::getBlobForUpdate);
+    connect(ui->pB_resetSaveForm, &QPushButton::clicked, this, &Dialog::getSender_resetForm);
+    connect(ui->pB_resetUpdateForm, &QPushButton::clicked, this, &Dialog::getSender_resetForm);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -307,7 +309,29 @@ void Dialog::checkCountRadioButton()
     }
 }
 
-void Dialog::getSentder_getAll()
+void Dialog::resetForm(QString btnName)
+{
+    if(btnName == "pB_resetSaveForm")
+    {
+        ui->lE_BlobName_SaveForm->setText("");
+        ui->lE_BlobSign_SaveForm->setText("");
+        ui->sB_BlobCount_SaveForm->setValue(0);
+        ui->sB_BlobRank_SaveForm->setValue(0);
+        ui->cB_BlobType_SaveForm->setCurrentIndex(0);
+    }
+
+    if(btnName == "pB_resetUpdateForm")
+    {
+        ui->lE_BlobId_UpdateForm->setText("");
+        ui->lE_BlobName_UpdateForm->setText("");
+        ui->lE_BlobSign_UpdateForm->setText("");
+        ui->sB_BlobCount_UpdateForm->setValue(0);
+        ui->sB_BlobRank_UpdateForm->setValue(0);
+        ui->cB_BlobType_UpdateForm->setCurrentIndex(0);
+    }
+}
+
+void Dialog::getSender_getAll()
 {
     QPushButton *btn = static_cast<QPushButton*>(sender());
     if(!btn) return;
@@ -321,4 +345,12 @@ void Dialog::getSender_getById()
     if(!btn) return;
 
     getBlobById(btn->objectName());
+}
+
+void Dialog::getSender_resetForm()
+{
+    QPushButton *btn = static_cast<QPushButton*>(sender());
+    if(!btn) return;
+
+    resetForm(btn->objectName());
 }

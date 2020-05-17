@@ -56,7 +56,9 @@ private slots:
     void addTagToBlob();
 
     void checkCountRadioButton();
-    void getSentder_getAll();
+    void resetForm(QString btnName);
+    void getSender_getAll();
     void getSender_getById();
+    void getSender_resetForm();
 };
 #endif // DIALOG_H

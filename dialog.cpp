@@ -2,13 +2,22 @@
 #include "ui_dialog.h"
 
 /**
+ * for configuration variables
+ * @see: https://forum.qt.io/topic/114664/how-to-set-environment-variables-properly/11
+ */
+/**
  * @see: https://amin-ahmadi.com/2016/01/17/how-to-send-and-receive-json-requests-in-qt/
  * @see: https://makina-corpus.com/blog/metier/archives/access-json-webservice-qt-c
  * @see: http://erickveil.github.io/2016/04/06/How-To-Manipulate-JSON-With-C++-and-Qt.html
  * @see: Qt official doc: https://doc.qt.io/qt-5/qnetworkaccessmanager.html
+ *
+ * @see: https://lucidar.me/fr/dev-c-cpp/reading-xml-files-with-qt/
+ * @see: https://qt.developpez.com/tutoriels/qtxml/
+ *
  * @brief Dialog::Dialog
  * @param parent
  */
+
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)
@@ -32,8 +41,8 @@ void Dialog::init()
     ui->splitter->setStretchFactor(0,1);
     ui->splitter_2->setStretchFactor(1,3);
 
-    connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
-    connect(ui->pB_GetPageAndSave, &QPushButton::clicked, this, &Dialog::getSentder_getAll);
+    connect(ui->pB_GetPage, &QPushButton::clicked, this, &Dialog::getSender_getAll);
+    connect(ui->pB_GetPageAndSave, &QPushButton::clicked, this, &Dialog::getSender_getAll);
     connect(ui->pB_GetAllPages, &QPushButton::clicked, this, &Dialog::getAllBlobs);
     connect(ui->pB_GetById, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_GetByCount, &QPushButton::clicked, this, &Dialog::getBlobByCount);
@@ -50,6 +59,8 @@ void Dialog::init()
     connect(ui->pB_ViewBlob_AddTag, &QPushButton::clicked, this, &Dialog::getSender_getById);
     connect(ui->pB_AddTag, &QPushButton::clicked, this, &Dialog::addTagToBlob);
     connect(ui->pB_Get_UpdateBlobForm, &QPushButton::clicked, this, &Dialog::getBlobForUpdate);
+    connect(ui->pB_resetSaveForm, &QPushButton::clicked, this, &Dialog::getSender_resetForm);
+    connect(ui->pB_resetUpdateForm, &QPushButton::clicked, this, &Dialog::getSender_resetForm);
 
     QPixmap pixmap(":/icons/save32x32.png");
     QIcon ButtonIcon(pixmap);
@@ -65,7 +76,7 @@ void Dialog::init()
 
 void Dialog::initDataBindUi()
 {
-    QJsonArray types = httpService.getAll_JsonArray("http://localhost:8080/type/all");
+    QJsonArray types = httpService.getAll_JsonArray("type/all");
 
     for(int i=0; i< types.count(); ++i){
         ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
@@ -73,7 +84,7 @@ void Dialog::initDataBindUi()
         ui->cB_BlobType_UpdateForm->addItem(types.at(i).toString());
     }
 
-    QJsonArray tags = httpService.getPage_JsonArray("http://localhost:8080/tag/all?pageNumber=0");
+    QJsonArray tags = httpService.getPage_JsonArray("tag/all?pageNumber=0");
 
     for(int i=0; i< tags.count(); ++i){
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
@@ -82,7 +93,7 @@ void Dialog::initDataBindUi()
 
 void Dialog::getAllBlobsByPage(QString btnName)
 {
-    QString url = QString("http://localhost:8080/blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
+    QString url = QString("blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
 
     QJsonDocument blobList = httpService.get(url);
 
@@ -101,7 +112,7 @@ void Dialog::getAllBlobsByPage(QString btnName)
 void Dialog::getAllBlobs()
 {
 
-    QJsonDocument allPagesJsonDoc = httpService.getAll("http://localhost:8080/blobj/all");
+    QJsonDocument allPagesJsonDoc = httpService.getAll("blobj/all");
 
     displayResponse(&allPagesJsonDoc);
 
@@ -130,7 +141,7 @@ void Dialog::getBlobById(QString btnName)
         return;
     }
 
-    QString url = QString("http://localhost:8080/blobj/byId?id=%1").arg(arg);
+    QString url = QString("blobj/byId?id=%1").arg(arg);
 
     QJsonDocument blobJ = httpService.get(url);
 
@@ -143,22 +154,22 @@ void Dialog::getBlobByCount()
 
     if(ui->rB_ExactCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCount?count=%1")
+        url = QString("blobj/byCount?count=%1")
                 .arg(ui->sB_BlobJCount1->value());
     }
     if(ui->rB_MinCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCountMin?minCount=%1")
+        url = QString("blobj/byCountMin?minCount=%1")
                 .arg(ui->sB_BlobJCount1->value());
     }
     if(ui->rB_MaxCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCountMax?maxCount=%1")
+        url = QString("blobj/byCountMax?maxCount=%1")
                 .arg(ui->sB_BlobJCount1->value());
     }
     if(ui->rB_MinMaxCount->isChecked())
     {
-        url = QString("http://localhost:8080/blobj/byCountTranche?minCount=%1&maxCount=%2")
+        url = QString("blobj/byCountTranche?minCount=%1&maxCount=%2")
                 .arg(ui->sB_BlobJCount1->value()).arg(ui->sB_BlobJCount2->value());
     }
 
@@ -169,7 +180,7 @@ void Dialog::getBlobByCount()
 
 void Dialog::getBlobByName()
 {
-    QString url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
+    QString url = QString("blobj/byName?name=%1").arg(ui->lE_BlobJName_Get->text());
 
     QJsonDocument blobJList = httpService.get(url);
 
@@ -178,7 +189,7 @@ void Dialog::getBlobByName()
 
 void Dialog::getBlobByType()
 {
-    QString url = QString("http://localhost:8080/blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
+    QString url = QString("blobj/byType?type=%1").arg(ui->cB_BlobJType_Get->currentText());
 
     QJsonDocument blobJList = httpService.get(url);
 
@@ -221,11 +232,11 @@ void Dialog::getBlobForUpdate()
     QString url = "";
 
     if(!ui->lE_BlobId_UpdateForm->text().isEmpty()) {
-        url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
+        url = QString("blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
     } else if (!ui->lE_BlobName_UpdateForm->text().isEmpty()) {
-        url = QString("http://localhost:8080/blobj/byName?name=%1").arg(ui->lE_BlobName_UpdateForm->text());
+        url = QString("blobj/byName?name=%1").arg(ui->lE_BlobName_UpdateForm->text());
     } else if (!ui->lE_BlobName_UpdateForm->text().isEmpty() && !ui->lE_BlobId_UpdateForm->text().isEmpty()) {
-        url = QString("http://localhost:8080/blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
+        url = QString("blobj/byId?id=%1").arg(ui->lE_BlobId_UpdateForm->text().toInt());
     }
 
     QJsonDocument blobJsonDoc = httpService.get(url);
@@ -307,7 +318,29 @@ void Dialog::checkCountRadioButton()
     }
 }
 
-void Dialog::getSentder_getAll()
+void Dialog::resetForm(QString btnName)
+{
+    if(btnName == "pB_resetSaveForm")
+    {
+        ui->lE_BlobName_SaveForm->clear();
+        ui->lE_BlobSign_SaveForm->clear();
+        ui->sB_BlobCount_SaveForm->setValue(0);
+        ui->sB_BlobRank_SaveForm->setValue(0);
+        ui->cB_BlobType_SaveForm->setCurrentIndex(0);
+    }
+
+    if(btnName == "pB_resetUpdateForm")
+    {
+        ui->lE_BlobId_UpdateForm->clear();
+        ui->lE_BlobName_UpdateForm->clear();
+        ui->lE_BlobSign_UpdateForm->clear();
+        ui->sB_BlobCount_UpdateForm->setValue(0);
+        ui->sB_BlobRank_UpdateForm->setValue(0);
+        ui->cB_BlobType_UpdateForm->setCurrentIndex(0);
+    }
+}
+
+void Dialog::getSender_getAll()
 {
     QPushButton *btn = static_cast<QPushButton*>(sender());
     if(!btn) return;
@@ -323,13 +356,10 @@ void Dialog::getSender_getById()
     getBlobById(btn->objectName());
 }
 
-// ----- USEFUL CODE SAMPLES: -----
-// Checking Json parsing errors:
-/*
-QJsonParseError jsonError;
-QJsonDocument configJsonDoc = QJsonDocument::fromJson(response_data, &jsonError);
-if( jsonError.error != QJsonParseError::NoError )
-     qDebug() << QString("Json error: %1").arg(jsonError.errorString());
-else if( configJsonDoc .isNull() )
-     qDebug() << "Null JsonDocument";
-*/
+void Dialog::getSender_resetForm()
+{
+    QPushButton *btn = static_cast<QPushButton*>(sender());
+    if(!btn) return;
+
+    resetForm(btn->objectName());
+}

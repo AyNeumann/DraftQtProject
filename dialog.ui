@@ -811,7 +811,7 @@
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <widget class="QPlainTextEdit" name="pTE_View">
@@ -839,7 +839,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_SaveBlobForm">
         <attribute name="title">
@@ -847,7 +847,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="grpB_SaveForm">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -933,14 +933,14 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton">
+                 <widget class="QPushButton" name="pB_AddTagSaveBlobForm">
                   <property name="text">
                    <string>Add Tag</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_2">
+                 <widget class="QPushButton" name="pB_AddLnkBSaveBlobForm">
                   <property name="text">
                    <string>Add Linked Blob</string>
                   </property>
@@ -953,6 +953,13 @@
                 <property name="spacing">
                  <number>0</number>
                 </property>
+                <item>
+                 <widget class="QPushButton" name="pB_resetSaveForm">
+                  <property name="text">
+                   <string>Reset</string>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <spacer name="horizontalSpacer">
                   <property name="orientation">
@@ -988,7 +995,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_17">
          <item>
-          <widget class="QGroupBox" name="groupBox_10">
+          <widget class="QGroupBox" name="grpB_UpdateForm">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -1063,6 +1070,13 @@
               </item>
               <item row="6" column="0" colspan="2">
                <layout class="QHBoxLayout" name="horizontalLayout_18">
+                <item>
+                 <widget class="QPushButton" name="pB_resetUpdateForm">
+                  <property name="text">
+                   <string>Reset</string>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <spacer name="horizontalSpacer_10">
                   <property name="orientation">

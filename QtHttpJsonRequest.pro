@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,12 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     blob_store.cpp \
+    configuration.cpp \
     http_service.cpp \
     main.cpp \
     dialog.cpp
 
 HEADERS += \
     blob_store.h \
+    configuration.h \
     dialog.h \
     http_service.h
 

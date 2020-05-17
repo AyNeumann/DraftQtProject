@@ -2,12 +2,13 @@
 
 httpService::httpService(QObject *parent) : QObject(parent)
 {
-
+    m_apiUrl = config->getApiUrl();
 }
 
 QJsonDocument httpService::get(QString url)
 {
-    QNetworkRequest request(url);
+    QString requestUrl = m_apiUrl +  url;
+    QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.get(request);
@@ -38,6 +39,10 @@ QJsonDocument httpService::getAll(QString url)
         QString requestUrl = QString(url + "?pageNumber=%1").arg(pageNumber);
         QJsonDocument objectList = get(requestUrl);
 
+        if(objectList.object()["content"].isNull()) {
+            break;
+        }
+
         allPagesArray.append(objectList.object()["content"]);
 
         isLast = objectList.object()["last"].toBool();
@@ -60,7 +65,8 @@ QJsonDocument httpService::getAll(QString url)
 
 QJsonArray httpService::getAll_JsonArray(QString url)
 {
-    QNetworkRequest request(url);
+    QString requestUrl = m_apiUrl +  url;
+    QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.get(request);
@@ -83,7 +89,7 @@ QJsonArray httpService::getAll_JsonArray(QString url)
 
 QJsonArray httpService::getPage_JsonArray(QString url)
 {
-    QString requestUrl = QString(url + "?pageNumber=0");
+    QString requestUrl = m_apiUrl +  url;
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 

@@ -320,7 +320,40 @@ void Dialog::checkCountRadioButton()
 
 void Dialog::resetForm(QString btnName)
 {
+    QList<QLineEdit*> lineEditList;
+    QList<QSpinBox*> spinBoxList;
+    QList<QComboBox*> comboBoxList;
+
     if(btnName == "pB_resetSaveForm")
+    {
+        lineEditList = ui->grpB_SaveForm->findChildren<QLineEdit*>();
+        spinBoxList = ui->grpB_SaveForm->findChildren<QSpinBox*>();
+        comboBoxList = ui->grpB_SaveForm->findChildren<QComboBox*>();
+    }
+
+    if(btnName == "pB_resetUpdateForm")
+    {
+        lineEditList = ui->grpB_UpdateForm->findChildren<QLineEdit*>();
+        spinBoxList = ui->grpB_UpdateForm->findChildren<QSpinBox*>();
+        comboBoxList = ui->grpB_UpdateForm->findChildren<QComboBox*>();
+    }
+
+    foreach(auto obj, lineEditList)
+    {
+        obj->clear();
+    }
+
+    foreach(auto obj, spinBoxList)
+    {
+        obj->clear();
+    }
+
+    foreach(auto obj, comboBoxList)
+    {
+        obj->setCurrentIndex(0);
+    }
+
+    /*if(btnName == "pB_resetSaveForm")
     {
         ui->lE_BlobName_SaveForm->clear();
         ui->lE_BlobSign_SaveForm->clear();
@@ -337,7 +370,7 @@ void Dialog::resetForm(QString btnName)
         ui->sB_BlobCount_UpdateForm->setValue(0);
         ui->sB_BlobRank_UpdateForm->setValue(0);
         ui->cB_BlobType_UpdateForm->setCurrentIndex(0);
-    }
+    }*/
 }
 
 void Dialog::getSender_getAll()

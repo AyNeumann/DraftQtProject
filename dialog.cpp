@@ -91,6 +91,7 @@ void Dialog::initDataBindUi()
     }
 }
 
+/*
 void Dialog::getAllBlobsByPage(QString btnName)
 {
     QString url = QString("blobj/all?pageNumber=%1").arg(ui->sB_PageNumber->value());
@@ -102,6 +103,28 @@ void Dialog::getAllBlobsByPage(QString btnName)
     if(btnName == "pB_GetPageAndSave")
     {
         QString storeStatus = blobStore.storeBlobsInTempStore(&blobList);
+
+        if(storeStatus != "OK") {
+            QMessageBox::critical(this, "Error", storeStatus);
+        }
+    }
+}
+*/
+
+void Dialog::getAllBlobsByPage(QString btnName)
+{
+    QString *url = new QString("blobj/all?pageNumber=");
+    url->append(QString::number(ui->sB_PageNumber->value()));
+
+    qDebug() << url->toLatin1();
+
+    QJsonDocument *blobList = new QJsonDocument(httpService.get(url));
+
+    displayResponse(blobList);
+
+    if(btnName == "pB_GetPageAndSave")
+    {
+        QString storeStatus = blobStore.storeBlobsInTempStore(blobList);
 
         if(storeStatus != "OK") {
             QMessageBox::critical(this, "Error", storeStatus);

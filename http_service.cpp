@@ -27,6 +27,28 @@ QJsonDocument httpService::get(QString url)
     return json;
 }
 
+QJsonDocument httpService::get(QString *url)
+{
+    QString requestUrl = m_apiUrl +  url;
+    QNetworkRequest request(requestUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = nam.get(request);
+
+    while (!reply->isFinished())
+    {
+        qApp->processEvents();
+    }
+
+    QByteArray response_data = reply->readAll();
+
+    QJsonDocument json = handleHTTPErrors(response_data, reply);
+
+    reply->deleteLater();
+
+    return json;
+}
+
 QJsonDocument httpService::getAll(QString url)
 {
     //TODO: if store has been initialize ? get data from sotre : get data from api

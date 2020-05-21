@@ -27,8 +27,9 @@ QJsonDocument httpService::get(QString url)
     return json;
 }
 
-QJsonDocument httpService::get(QString *url)
+QJsonDocument httpService::getWithUrlPointer(QString *url)
 {
+    qDebug() << "Get 2 Called";
     QString requestUrl = m_apiUrl +  url;
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -49,38 +50,37 @@ QJsonDocument httpService::get(QString *url)
     return json;
 }
 
-QJsonDocument httpService::getAll(QString url)
+QJsonDocument* httpService::getAll(QString *url)
 {
-    //TODO: if store has been initialize ? get data from sotre : get data from api
     int pageNumber = 0;
     bool isLast = false;
-    QJsonArray allPagesArray;
-    QJsonObject infos;
+    QJsonArray *allPagesArray = new QJsonArray();
+    QJsonObject *infos = new QJsonObject();
 
     do {
-        QString requestUrl = QString(url + "?pageNumber=%1").arg(pageNumber);
-        QJsonDocument objectList = get(requestUrl);
+        QString *requestUrl = new QString(url->append(QString::number(pageNumber)));
+        QJsonDocument *objectList = new QJsonDocument(get(*requestUrl));
 
-        if(objectList.object()["content"].isNull()) {
+        if(objectList->object()["content"].isNull()) {
             break;
         }
 
-        allPagesArray.append(objectList.object()["content"]);
+        allPagesArray->append(objectList->object()["content"]);
 
-        isLast = objectList.object()["last"].toBool();
+        isLast = objectList->object()["last"].toBool();
         pageNumber++;
 
         if(isLast == true)
         {
-            infos.insert("totalPages", objectList.object().value("totalPages"));
-            infos.insert("totalElements", objectList.object().value("totalElements"));
-            infos.insert("size", objectList.object().value("size"));
-            allPagesArray.append(infos);
+            infos->insert("totalPages", objectList->object().value("totalPages"));
+            infos->insert("totalElements", objectList->object().value("totalElements"));
+            infos->insert("size", objectList->object().value("size"));
+            allPagesArray->append(*infos);
         }
 
     } while(!isLast);
 
-    QJsonDocument allPagesJsonDoc(allPagesArray);
+    QJsonDocument *allPagesJsonDoc =  new QJsonDocument(*allPagesArray);
 
     return allPagesJsonDoc;
 }
@@ -196,7 +196,6 @@ QByteArray httpService::deleteObj(QString url, int id)
 
     return response_data;
 }
-
 
 QJsonDocument httpService::handleHTTPErrors(QByteArray response_data, QNetworkReply *reply)
 {

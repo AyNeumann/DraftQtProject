@@ -50,13 +50,13 @@ void configuration::getConfigurationXmlFile()
 
     QByteArray data = xmlBOM.toByteArray();
 
-    QXmlStreamReader *reader = new QXmlStreamReader();
-    reader->addData(data);
-    while(reader->readNextStartElement())
+    QXmlStreamReader reader;
+    reader.addData(data);
+    while(reader.readNextStartElement())
     {
-        if (reader->name() == "api_url")
+        if (reader.name() == "api_url")
         {
-            m_apiUrl = reader->readElementText();
+            m_apiUrl = reader.readElementText();
         }
     }
 }

@@ -5,7 +5,7 @@ blobStore::blobStore(QObject *parent) : QObject(parent)
 
 }
 
-QString blobStore::storeBlobs(QJsonDocument *blobsToSave)
+QString blobStore::storeBlobs(QJsonDocument &blobsToSave)
 {
     QString returnMsg;
 
@@ -19,7 +19,7 @@ QString blobStore::storeBlobs(QJsonDocument *blobsToSave)
     }
 
     QTextStream stream(&file);
-    stream << QString(blobsToSave->toJson());
+    stream << QString(blobsToSave.toJson());
     file.close();
 
     returnMsg = "OK";
@@ -27,7 +27,7 @@ QString blobStore::storeBlobs(QJsonDocument *blobsToSave)
     return returnMsg;
 }
 
-QString blobStore::storeBlobsInTempStore(QJsonDocument *blobsToSaveJson)
+QString blobStore::storeBlobsInTempStore(QJsonDocument &blobsToSaveJson)
 {
     QJsonArray blobsArray;
     QString returnMsg;
@@ -35,7 +35,7 @@ QString blobStore::storeBlobsInTempStore(QJsonDocument *blobsToSaveJson)
     QString blobStore = QDir::currentPath() + QDir::separator() + "tempBlobStore.txt";
     QFile file(blobStore);
 
-    QJsonObject blobsObj = blobsToSaveJson->object();
+    QJsonObject blobsObj = blobsToSaveJson.object();
     blobsArray = blobsObj["content"].toArray();
     QJsonDocument blobsToSaveFromArray(blobsArray);
 

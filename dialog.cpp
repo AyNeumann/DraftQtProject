@@ -93,12 +93,9 @@ void Dialog::initDataBindUi()
 
 void Dialog::getAllBlobsByPage(QString btnName)
 {
-    QString *url = new QString("blobj/all?pageNumber=");
-    url->append(QString::number(ui->sB_PageNumber->value()));
+    QString url = QString("blobj/all?pageNumber=%1").arg(QString::number(ui->sB_PageNumber->value()));
 
-    qDebug() << url->toLatin1();
-
-    QJsonDocument *blobList = new QJsonDocument(httpService.get(*url));
+    QJsonDocument blobList = httpService.get(url);
 
     displayResponse(blobList);
 
@@ -115,8 +112,8 @@ void Dialog::getAllBlobsByPage(QString btnName)
 void Dialog::getAllBlobs()
 {
 
-    QString *url = new QString("blobj/all?pageNumber=");
-    QJsonDocument *allPagesJsonDoc = new QJsonDocument(*httpService.getAll(url));
+    QString url = "blobj/all?pageNumber=";
+    QJsonDocument allPagesJsonDoc = httpService.getAll(url);
 
     displayResponse(allPagesJsonDoc);
 
@@ -149,7 +146,7 @@ void Dialog::getBlobById(QString btnName)
 
     QJsonDocument blobJ = httpService.get(url);
 
-    displayResponse(&blobJ);
+    displayResponse(blobJ);
 }
 
 void Dialog::getBlobByCount()
@@ -179,7 +176,7 @@ void Dialog::getBlobByCount()
 
     QJsonDocument blobJList = httpService.get(url);
 
-    displayResponse(&blobJList);
+    displayResponse(blobJList);
 }
 
 void Dialog::getBlobByName()
@@ -188,7 +185,7 @@ void Dialog::getBlobByName()
 
     QJsonDocument blobJList = httpService.get(url);
 
-    displayResponse(&blobJList);
+    displayResponse(blobJList);
 }
 
 void Dialog::getBlobByType()
@@ -197,7 +194,7 @@ void Dialog::getBlobByType()
 
     QJsonDocument blobJList = httpService.get(url);
 
-    displayResponse(&blobJList);
+    displayResponse(blobJList);
 }
 
 void Dialog::saveBlob()
@@ -208,7 +205,7 @@ void Dialog::saveBlob()
 
     QJsonDocument savedBlob = httpService.save("http://localhost:8080/blobj/save", QJsonDocument(BlobJAsJson));
 
-    displayResponse(&savedBlob);
+    displayResponse(savedBlob);
 }
 
 void Dialog::updateBlob()
@@ -228,7 +225,7 @@ void Dialog::updateBlob()
 
     QJsonDocument updatedBlob = httpService.update("http://localhost:8080/blobj/update", bloJToUpdateDoc);
 
-    displayResponse(&updatedBlob);
+    displayResponse(updatedBlob);
 }
 
 void Dialog::getBlobForUpdate()
@@ -265,7 +262,7 @@ void Dialog::getBlobForUpdate()
     ui->cB_BlobType_UpdateForm->setCurrentText(blob["type"].toString());
 
     // Display in main view
-    displayResponse(&blobJsonDoc);
+    displayResponse(blobJsonDoc);
 }
 
 void Dialog::deleteBlob()
@@ -292,7 +289,7 @@ void Dialog::saveBlobFromForm()
 
     QJsonDocument savedBlob = httpService.save("http://localhost:8080/blobj/save", QJsonDocument(blobJToSave));
 
-    displayResponse(&savedBlob);
+    displayResponse(savedBlob);
 }
 
 void Dialog::addTagToBlob()
@@ -300,9 +297,9 @@ void Dialog::addTagToBlob()
 
 }
 
-void Dialog::displayResponse(QJsonDocument *json)
+void Dialog::displayResponse(QJsonDocument json)
 {
-    QString strJson(json->toJson());
+    QString strJson(json.toJson());
 
     ui->pTE_View->document()->setPlainText(strJson);
 }

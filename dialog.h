@@ -40,8 +40,8 @@ private:
     void initDataBindUi();
     void getAllBlobsByPage(QString btnName);
     void getBlobById(QString btnName);
-    void displayResponse(QJsonDocument json);
-    void displayResponse(QString string);
+    void displayResponse(QJsonDocument &json);
+    void displayResponse(QString &string);
 
     void testFunction();
 

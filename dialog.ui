@@ -133,7 +133,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="sb_GetIdNumber"/>
+              <widget class="QSpinBox" name="sb_GetIdNumber">
+               <property name="maximum">
+                <number>9999</number>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -888,7 +892,11 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QSpinBox" name="sB_BlobCount_SaveForm"/>
+               <widget class="QSpinBox" name="sB_BlobCount_SaveForm">
+                <property name="maximum">
+                 <number>99</number>
+                </property>
+               </widget>
               </item>
               <item row="3" column="0">
                <widget class="QLabel" name="label_8">
@@ -1056,7 +1064,11 @@
                </widget>
               </item>
               <item row="4" column="1">
-               <widget class="QSpinBox" name="sB_BlobRank_UpdateForm"/>
+               <widget class="QSpinBox" name="sB_BlobRank_UpdateForm">
+                <property name="maximum">
+                 <number>2500</number>
+                </property>
+               </widget>
               </item>
               <item row="5" column="0">
                <widget class="QLabel" name="label_18">

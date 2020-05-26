@@ -2,11 +2,13 @@
 
 blobStore::blobStore(QObject *parent) : QObject(parent)
 {
-
+    m_isUpToDate = false;
 }
 
 QString blobStore::storeBlobs(QJsonDocument &blobsToSave)
 {
+    qDebug() << "Storing blobs...";
+    qDebug() << "Blobs To Save: " << blobsToSave;
     QString returnMsg;
 
     QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
@@ -21,6 +23,8 @@ QString blobStore::storeBlobs(QJsonDocument &blobsToSave)
     QTextStream stream(&file);
     stream << QString(blobsToSave.toJson());
     file.close();
+
+    m_isUpToDate = true;
 
     returnMsg = "OK";
 
@@ -52,4 +56,55 @@ QString blobStore::storeBlobsInTempStore(QJsonDocument &blobsToSaveJson)
     returnMsg = "OK";
 
     return returnMsg;
+}
+
+QJsonDocument blobStore::getBlobs()
+{
+    qDebug() << "Get all blobs from STORE";
+    QJsonParseError jsonError;
+
+    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
+    QFile file(blobStore);
+
+    if(!file.exists())
+    {
+        qWarning() << "Blob store file not found";
+    }
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "Cannot open Blob store file: " << file.errorString();
+    }
+    QByteArray storeContentArray = file.readAll();
+
+    qDebug() << "*************************** storeContentArray: " <<  storeContentArray;
+    qDebug() << "*************************** storeContentArray END ***** ";
+
+    file.close();
+
+    QJsonDocument storeContentJson = QJsonDocument::fromJson(storeContentArray, &jsonError);
+    if(jsonError.error != QJsonParseError::NoError)
+    {
+        // ERROR HERE!!!!
+        qDebug() << QString("JsonError: %1").arg(jsonError.errorString());
+    }
+    else if(storeContentJson.isNull())
+    {
+        qDebug() << "storeContentJson is NULL";
+    }
+    qDebug() << "*************************** storeContentArray: " << storeContentJson;
+
+
+
+    return storeContentJson;
+}
+
+bool blobStore::getIsUpToDate()
+{
+    return m_isUpToDate;
+}
+
+void blobStore::setIsUpToDate(bool isUpToDate)
+{
+    m_isUpToDate = isUpToDate;
 }

@@ -79,7 +79,8 @@ void Dialog::initDataBindUi()
     QString url_types = "type/all";
     QJsonArray types = httpService.getAll_JsonArray(url_types);
 
-    for(int i=0; i< types.count(); ++i){
+    for(int i=0; i< types.count(); ++i)
+    {
         ui->cB_BlobType_SaveForm->addItem(types.at(i).toString());
         ui->cB_BlobJType_Get->addItem(types.at(i).toString());
         ui->cB_BlobType_UpdateForm->addItem(types.at(i).toString());
@@ -88,7 +89,8 @@ void Dialog::initDataBindUi()
     QString url_tags = "tag/all?pageNumber=0";
     QJsonArray tags = httpService.getPage_JsonArray(url_tags);
 
-    for(int i=0; i< tags.count(); ++i){
+    for(int i=0; i< tags.count(); ++i)
+    {
         ui->cB_TagName_AddTag->addItem(tags.at(i)["name"].toString());
     }
 }
@@ -105,7 +107,8 @@ void Dialog::getAllBlobsByPage(QString btnName)
     {
         QString storeStatus = blobStore.storeBlobsInTempStore(blobList);
 
-        if(storeStatus != "OK") {
+        if(storeStatus != "OK")
+        {
             QMessageBox::critical(this, "Error", storeStatus);
         }
     }
@@ -113,16 +116,24 @@ void Dialog::getAllBlobsByPage(QString btnName)
 
 void Dialog::getAllBlobs()
 {
+    QJsonDocument allPagesJsonDoc;
 
     QString url = "blobj/all?pageNumber=";
-    QJsonDocument allPagesJsonDoc = httpService.getAll(url);
+    if(blobStore.getIsUpToDate())
+    {
+        allPagesJsonDoc = blobStore.getBlobs();
+    }
+    else
+    {
+        allPagesJsonDoc = httpService.getAll(url);
+        QString storeStatus = blobStore.storeBlobs(allPagesJsonDoc);
+        if(storeStatus != "OK")
+        {
+            QMessageBox::critical(this, "Error", storeStatus);
+        }
+    }
 
     displayResponse(allPagesJsonDoc);
-
-    QString storeStatus = blobStore.storeBlobs(allPagesJsonDoc);
-    if(storeStatus != "OK") {
-        QMessageBox::critical(this, "Error", storeStatus);
-    }
 }
 
 void Dialog::getBlobById(QString btnName)
@@ -208,6 +219,8 @@ void Dialog::saveBlob()
     QString url = "blobj/save";
     QJsonDocument savedBlob = httpService.save(url, BlobJAsJson);
 
+    blobStore.setIsUpToDate(false);
+
     displayResponse(savedBlob);
 }
 
@@ -228,6 +241,8 @@ void Dialog::updateBlob()
 
     QString url = "blobj/update";
     QJsonDocument updatedBlob = httpService.update(url, bloJToUpdateDoc);
+
+    blobStore.setIsUpToDate(false);
 
     displayResponse(updatedBlob);
 }
@@ -280,6 +295,8 @@ void Dialog::deleteBlob()
 
     QString deletedBlobAsString = QString(deletedBlob);
 
+    blobStore.setIsUpToDate(false);
+
     displayResponse(deletedBlobAsString);
 }
 
@@ -297,6 +314,8 @@ void Dialog::saveBlobFromForm()
     QJsonDocument blobToSaveDoc = QJsonDocument(blobToSaveObj);
     QString url = "blobj/save";
     QJsonDocument savedBlob = httpService.save(url, blobToSaveDoc);
+
+    blobStore.setIsUpToDate(false);
 
     displayResponse(savedBlob);
 }

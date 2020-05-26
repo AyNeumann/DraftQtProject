@@ -29,6 +29,8 @@ QJsonDocument httpService::get(QString &url)
 
 QJsonDocument httpService::getAll(QString &url)
 {
+    qDebug() << "Get all blobs from API";
+
     int pageNumber = 0;
     bool isLast = false;
     QJsonArray allPagesArray;
@@ -38,7 +40,8 @@ QJsonDocument httpService::getAll(QString &url)
         QString requestUrl = url.append(QString::number(pageNumber));
         QJsonDocument objectList = get(requestUrl);
 
-        if(objectList.object()["content"].isNull()) {
+        if(objectList.object()["content"].isNull())
+        {
             break;
         }
 

@@ -22,6 +22,13 @@ public:
 
     QString storeBlobs(QJsonDocument &blobsToSave);
     QString storeBlobsInTempStore(QJsonDocument &blobsToSave);
+    QJsonDocument getBlobs();
+
+    bool getIsUpToDate();
+    void setIsUpToDate(bool isUpToDate);
+
+private:
+    bool m_isUpToDate;
 
 signals:
 

@@ -43,8 +43,6 @@ private:
     void displayResponse(QJsonDocument &json);
     void displayResponse(QString &string);
 
-    void testFunction();
-
 private slots:
     void getAllBlobs();
     void getBlobByCount();

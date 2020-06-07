@@ -5,7 +5,7 @@ httpService::httpService(QObject *parent) : QObject(parent)
     m_apiUrl = config->getApiUrl();
 }
 
-QJsonDocument httpService::get(QString url)
+QJsonDocument httpService::get(QString &url)
 {
     QString requestUrl = m_apiUrl +  url;
     QNetworkRequest request(requestUrl);
@@ -27,41 +27,21 @@ QJsonDocument httpService::get(QString url)
     return json;
 }
 
-QJsonDocument httpService::get(QString *url)
+QJsonDocument httpService::getAll(QString &url)
 {
-    QString requestUrl = m_apiUrl +  url;
-    QNetworkRequest request(requestUrl);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    qDebug() << "Get all blobs from API";
 
-    QNetworkReply *reply = nam.get(request);
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument json = handleHTTPErrors(response_data, reply);
-
-    reply->deleteLater();
-
-    return json;
-}
-
-QJsonDocument httpService::getAll(QString url)
-{
-    //TODO: if store has been initialize ? get data from sotre : get data from api
     int pageNumber = 0;
     bool isLast = false;
     QJsonArray allPagesArray;
     QJsonObject infos;
 
     do {
-        QString requestUrl = QString(url + "?pageNumber=%1").arg(pageNumber);
+        QString requestUrl = url.append(QString::number(pageNumber));
         QJsonDocument objectList = get(requestUrl);
 
-        if(objectList.object()["content"].isNull()) {
+        if(objectList.object()["content"].isNull())
+        {
             break;
         }
 
@@ -85,7 +65,7 @@ QJsonDocument httpService::getAll(QString url)
     return allPagesJsonDoc;
 }
 
-QJsonArray httpService::getAll_JsonArray(QString url)
+QJsonArray httpService::getAll_JsonArray(QString &url)
 {
     QString requestUrl = m_apiUrl +  url;
     QNetworkRequest request(requestUrl);
@@ -109,7 +89,7 @@ QJsonArray httpService::getAll_JsonArray(QString url)
     return typesArray;
 }
 
-QJsonArray httpService::getPage_JsonArray(QString url)
+QJsonArray httpService::getPage_JsonArray(QString &url)
 {
     QString requestUrl = m_apiUrl +  url;
     QNetworkRequest request(requestUrl);
@@ -135,9 +115,10 @@ QJsonArray httpService::getPage_JsonArray(QString url)
     return responseDataArray;
 }
 
-QJsonDocument httpService::save(QString url, QJsonDocument objectToSave)
+QJsonDocument httpService::save(QString &url, QJsonDocument &objectToSave)
 {
-    QNetworkRequest request(url);
+    QString requestUrl = m_apiUrl +  url;
+    QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.post(request, objectToSave.toJson());
@@ -156,9 +137,10 @@ QJsonDocument httpService::save(QString url, QJsonDocument objectToSave)
     return json;
 }
 
-QJsonDocument httpService::update(QString url, QJsonDocument objectToUpdate)
+QJsonDocument httpService::update(QString &url, QJsonDocument &objectToUpdate)
 {
-    QNetworkRequest request(url);
+    QString requestUrl = m_apiUrl +  url;
+    QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = nam.put(request, objectToUpdate.toJson());
@@ -177,9 +159,9 @@ QJsonDocument httpService::update(QString url, QJsonDocument objectToUpdate)
     return json;
 }
 
-QByteArray httpService::deleteObj(QString url, int id)
+QByteArray httpService::deleteObj(QString &url, int &id)
 {
-    QString requestUrl = QString(url + "?id=%1").arg(id);
+    QString requestUrl = QString(m_apiUrl + url + "?id=%1").arg(id);
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -197,8 +179,7 @@ QByteArray httpService::deleteObj(QString url, int id)
     return response_data;
 }
 
-
-QJsonDocument httpService::handleHTTPErrors(QByteArray response_data, QNetworkReply *reply)
+QJsonDocument httpService::handleHTTPErrors(QByteArray &response_data, QNetworkReply *reply)
 {
     QJsonDocument json;
 
@@ -213,6 +194,8 @@ QJsonDocument httpService::handleHTTPErrors(QByteArray response_data, QNetworkRe
     } else {
         json = QJsonDocument::fromJson(response_data);
     }
+
+    reply->deleteLater();
 
     return json;
 }

@@ -19,17 +19,16 @@ class httpService : public QObject
 public:
     explicit httpService(QObject *parent = nullptr);
 
-    QJsonDocument get(QString url);
-    QJsonDocument get(QString *url);
-    QJsonDocument getAll(QString url);
-    QJsonArray getAll_JsonArray(QString url);
-    QJsonArray getPage_JsonArray(QString url);
-    QJsonDocument save(QString url, QJsonDocument blobJToSave);
-    QJsonDocument update(QString url, QJsonDocument blobJToUpdate);
-    QByteArray deleteObj(QString url, int id);
+    QJsonDocument get(QString &url);
+    QJsonDocument getAll(QString &url);
+    QJsonArray getAll_JsonArray(QString &url);
+    QJsonArray getPage_JsonArray(QString &url);
+    QJsonDocument save(QString &url, QJsonDocument &blobJToSave);
+    QJsonDocument update(QString &url, QJsonDocument &blobJToUpdate);
+    QByteArray deleteObj(QString &url, int &id);
 
 private:
-    QJsonDocument handleHTTPErrors(QByteArray response_data, QNetworkReply *reply);
+    QJsonDocument handleHTTPErrors(QByteArray &response_data, QNetworkReply *reply);
 
     configuration *config = new configuration(this);
     QNetworkAccessManager nam;

@@ -8,10 +8,9 @@ blobStore::blobStore(QObject *parent) : QObject(parent)
 QString blobStore::storeBlobs(QJsonDocument &blobsToSave)
 {
     qDebug() << "Storing blobs...";
-    qDebug() << "Blobs To Save: " << blobsToSave;
     QString returnMsg;
 
-    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
+    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.json";
     QFile file(blobStore);
 
     if(!file.open(QIODevice::WriteOnly))
@@ -36,7 +35,7 @@ QString blobStore::storeBlobsInTempStore(QJsonDocument &blobsToSaveJson)
     QJsonArray blobsArray;
     QString returnMsg;
 
-    QString blobStore = QDir::currentPath() + QDir::separator() + "tempBlobStore.txt";
+    QString blobStore = QDir::currentPath() + QDir::separator() + "tempBlobStore.json";
     QFile file(blobStore);
 
     QJsonObject blobsObj = blobsToSaveJson.object();
@@ -60,10 +59,11 @@ QString blobStore::storeBlobsInTempStore(QJsonDocument &blobsToSaveJson)
 
 QJsonDocument blobStore::getBlobs()
 {
+
     qDebug() << "Get all blobs from STORE";
     QJsonParseError jsonError;
 
-    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.txt";
+    QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.json";
     QFile file(blobStore);
 
     if(!file.exists())
@@ -75,26 +75,21 @@ QJsonDocument blobStore::getBlobs()
     {
         qWarning() << "Cannot open Blob store file: " << file.errorString();
     }
-    QByteArray storeContentArray = file.readAll();
 
-    qDebug() << "*************************** storeContentArray: " <<  storeContentArray;
-    qDebug() << "*************************** storeContentArray END ***** ";
+    QByteArray storeContentArray = file.readAll();
 
     file.close();
 
     QJsonDocument storeContentJson = QJsonDocument::fromJson(storeContentArray, &jsonError);
+
     if(jsonError.error != QJsonParseError::NoError)
     {
-        // ERROR HERE!!!!
         qDebug() << QString("JsonError: %1").arg(jsonError.errorString());
     }
-    else if(storeContentJson.isNull())
+    else if(storeContentJson.isEmpty())
     {
-        qDebug() << "storeContentJson is NULL";
+        qDebug() << "storeContentJsonArray is Empty";
     }
-    qDebug() << "*************************** storeContentArray: " << storeContentJson;
-
-
 
     return storeContentJson;
 }

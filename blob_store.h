@@ -21,6 +21,9 @@ public:
     explicit blobStore(QObject *parent = nullptr);
 
     QString storeBlobs(QJsonDocument &blobsToSave);
+
+    QString test_storeBlobs(QByteArray &blobsToSave);
+
     QString storeBlobsInTempStore(QJsonDocument &blobsToSave);
     QJsonDocument getBlobs();
 

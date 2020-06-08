@@ -20,7 +20,13 @@ public:
     explicit httpService(QObject *parent = nullptr);
 
     QJsonDocument get(QString &url);
+
+    QByteArray test_get(QString &url);
+
     QJsonDocument getAll(QString &url);
+
+    QByteArray test_getAll(QString &url);
+
     QJsonArray getAll_JsonArray(QString &url);
     QJsonArray getPage_JsonArray(QString &url);
     QJsonDocument save(QString &url, QJsonDocument &blobJToSave);

@@ -19,8 +19,7 @@ QString blobStore::storeBlobs(QJsonDocument &blobsToSave)
         return returnMsg;
     }
 
-    QTextStream stream(&file);
-    stream << QString(blobsToSave.toJson());
+    file.write(blobsToSave.toJson());
     file.close();
 
     m_isUpToDate = true;
@@ -85,6 +84,7 @@ QJsonDocument blobStore::getBlobs()
     if(jsonError.error != QJsonParseError::NoError)
     {
         qDebug() << QString("JsonError: %1").arg(jsonError.errorString());
+        qDebug() << jsonError.offset;
     }
     else if(storeContentJson.isEmpty())
     {

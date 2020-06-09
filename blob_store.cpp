@@ -47,8 +47,7 @@ QString blobStore::storeBlobsInTempStore(QJsonDocument &blobsToSaveJson)
         return returnMsg;
     }
 
-    QTextStream stream(&file);
-    stream << QString(blobsToSaveFromArray.toJson());
+    file.write(blobsToSaveJson.toJson());
     file.close();
 
     returnMsg = "OK";
@@ -61,6 +60,7 @@ QJsonDocument blobStore::getBlobs()
 
     qDebug() << "Get all blobs from STORE";
     QJsonParseError jsonError;
+    QByteArray storeContentArray;
 
     QString blobStore = QDir::currentPath() + QDir::separator() + "blobStore.json";
     QFile file(blobStore);
@@ -75,7 +75,10 @@ QJsonDocument blobStore::getBlobs()
         qWarning() << "Cannot open Blob store file: " << file.errorString();
     }
 
-    QByteArray storeContentArray = file.readAll();
+    while(!file.atEnd()) {
+        QByteArray line = file.readLine();
+        storeContentArray.append(line);
+    }
 
     file.close();
 

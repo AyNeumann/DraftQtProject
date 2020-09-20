@@ -828,7 +828,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="lE_StatusBar"/>
         </item>
        </layout>
       </widget>

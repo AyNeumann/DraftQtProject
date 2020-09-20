@@ -59,6 +59,7 @@ QJsonDocument blobStore::getBlobs()
 {
 
     qDebug() << "Get all blobs from STORE";
+    QJsonDocument storeContentJson;
     QJsonParseError jsonError;
     QByteArray storeContentArray;
 
@@ -82,7 +83,7 @@ QJsonDocument blobStore::getBlobs()
 
     file.close();
 
-    QJsonDocument storeContentJson = QJsonDocument::fromJson(storeContentArray, &jsonError);
+    storeContentJson = QJsonDocument::fromJson(storeContentArray, &jsonError);
 
     if(jsonError.error != QJsonParseError::NoError)
     {

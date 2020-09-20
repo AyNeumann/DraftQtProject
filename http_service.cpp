@@ -65,50 +65,20 @@ QJsonDocument httpService::getAll(QString &url)
 
 QJsonArray httpService::getAll_JsonArray(QString &url)
 {
-    QString requestUrl = m_apiUrl +  url;
-    QNetworkRequest request(requestUrl);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = nam.get(request);
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument types = handleHTTPErrors(response_data, reply);
+    QJsonDocument types = get(url);
 
     QJsonArray typesArray = types.array();
-
-    reply->deleteLater();
 
     return typesArray;
 }
 
 QJsonArray httpService::getPage_JsonArray(QString &url)
 {
-    QString requestUrl = m_apiUrl +  url;
-    QNetworkRequest request(requestUrl);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = nam.get(request);
-
-    while (!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-
-    QJsonDocument responseDataDoc = QJsonDocument::fromJson(response_data);
+    QJsonDocument responseDataDoc = get(url);
 
     QJsonObject responseDataObject = responseDataDoc.object();
 
     QJsonArray responseDataArray = responseDataObject["content"].toArray();
-
-    reply->deleteLater();
 
     return responseDataArray;
 }
@@ -181,15 +151,28 @@ QJsonDocument httpService::handleHTTPErrors(QByteArray &response_data, QNetworkR
 {
     QJsonDocument json;
 
-    if(reply->error() != QNetworkReply::NoError) {
-        QJsonDocument errorJson = QJsonDocument::fromJson(response_data);
-        QJsonObject errorObject = errorJson.object();
-        QJsonObject errorMsg;
-        errorMsg.insert("Message", errorObject.value("message"));
-        errorMsg.insert("HttpError", errorObject.value("httpErrorNumber"));
-        QJsonDocument errorMsgJson(errorMsg);
-        json = errorMsgJson;
-    } else {
+    if(reply->error() != QNetworkReply::NoError)
+    {
+        if(response_data.isEmpty())
+        {
+            QJsonObject errorMsg;
+            errorMsg.insert("Message", reply->errorString());
+            QJsonDocument errorMsgJson(errorMsg);
+            json = errorMsgJson;
+        }
+        else
+        {
+            QJsonDocument errorJson = QJsonDocument::fromJson(response_data);
+            QJsonObject errorObject = errorJson.object();
+            QJsonObject errorMsg;
+            errorMsg.insert("Message", errorObject.value("message"));
+            errorMsg.insert("HttpError", errorObject.value("httpErrorNumber"));
+            QJsonDocument errorMsgJson(errorMsg);
+            json = errorMsgJson;
+        }
+    }
+    else
+    {
         json = QJsonDocument::fromJson(response_data);
     }
 
